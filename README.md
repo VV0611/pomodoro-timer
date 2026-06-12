@@ -1,0 +1,144 @@
+# 🍅 Pomodoro Timer
+
+A clean, installable Pomodoro focus timer built with **vanilla HTML, CSS, and JavaScript** — no frameworks, no build step. Every file is thoroughly commented to make the code easy to follow and learn from. Track your tasks, build a study streak, play ambient sounds, and stay focused.
+
+一个干净简洁、可安装的番茄钟,用**纯前端技术**(HTML / CSS / JavaScript)从零打造,没有使用任何框架,也无需构建步骤。每个文件都配有详细注释,方便阅读和学习。管理任务清单、累积专注天数、播放环境音,帮你保持专注。
+
+**🔗 Live demo / 在线体验:** https://vv0611.github.io/pomodoro-timer/timer.html
+
+![Demo](demo.gif)
+
+---
+
+## 📷 Screenshots / 截图
+
+<p align="center">
+  <img src="interface.png" width="45%" alt="Main interface" />
+  <img src="customize-time.png" width="45%" alt="Customizable durations" />
+</p>
+<p align="center">
+  <img src="tasks-streaks.png" width="45%" alt="Tasks and streaks" />
+  <img src="fullscreen.png" width="45%" alt="Fullscreen focus mode" />
+</p>
+
+---
+
+## ✨ Features / 功能
+
+**Core timer**
+- Focus / short break / long break cycle (4 rounds, with a longer break after round 4)
+- Fully customizable durations — set your own focus / break / long-break minutes
+- Color themes shift between focus, break, and long-break modes
+- Live countdown shown in the browser tab title, so you can track time from another tab
+
+**Stay on track**
+- 📌 Task list — add tasks and pin one as the active task; it auto-completes when the focus session ends
+- 🔥 Daily streak counter — rewards consecutive days of studying
+- 📊 7-day stats bar chart — see how many pomodoros you've completed each day
+
+**Atmosphere & alerts**
+- 🎵 Ambient sounds (ocean, rain, forest, lo-fi, jazz)
+- 🔔 Gentle beep when a session ends — generated live with the Web Audio API, no audio files needed
+- 🖥️ Desktop notifications when a session finishes
+- ⛶ Fullscreen focus mode
+
+**Works like an app**
+- 📲 Installable PWA — add it to your home screen or desktop
+- 🔌 Works fully offline thanks to a service worker
+- 💾 Settings, tasks, streaks, and stats all persist via `localStorage`
+
+<br>
+
+**核心计时**
+- 专注 / 短休息 / 长休息循环(4 轮一组,第 4 轮后进入更长的休息)
+- 时长完全可自定义 —— 自己设定专注 / 短休息 / 长休息的分钟数
+- 专注、休息、长休息三种模式各有不同配色
+- 浏览器标签页标题实时显示倒计时,切到别的标签页也能看到剩余时间
+
+**保持专注**
+- 📌 任务清单 —— 添加任务并置顶一个作为当前任务,专注结束后自动标记完成
+- 🔥 每日连续天数 —— 奖励你坚持学习的连续天数
+- 📊 近 7 天统计柱状图 —— 直观看到每天完成了多少个番茄钟
+
+**氛围与提醒**
+- 🎵 环境音(海浪、雨声、森林、Lo-fi、爵士)
+- 🔔 一段结束时播放轻柔提示音 —— 用 Web Audio API 实时生成,无需任何音频文件
+- 🖥️ 一段结束时弹出桌面通知
+- ⛶ 全屏专注模式
+
+**像 App 一样使用**
+- 📲 可安装的 PWA —— 可添加到主屏幕或桌面
+- 🔌 借助 Service Worker 完全离线可用
+- 💾 设置、任务、连续天数、统计数据全部通过 `localStorage` 持久化保存
+
+---
+
+## 🛠️ Technical highlights / 技术亮点
+
+A few details worth a closer look if you're here to learn:
+
+- **Drift-proof timing.** Instead of counting down with `setInterval` and subtracting one second per tick (which drifts over time and gets *throttled* when the tab is in the background), the timer anchors to a target end timestamp and recomputes the remaining time from `Date.now()` on every tick. Switch tabs for 25 minutes and come back — it's still accurate.
+- **Sound without files.** Session-end alerts are synthesized at runtime with the Web Audio API — an oscillator plus a gain node, with a smooth fade-out to avoid the click/pop you'd get from cutting a tone off abruptly.
+- **Offline-first PWA.** A service worker pre-caches the app shell on install and serves it cache-first, so the timer keeps working with no internet. Old caches are cleaned up on activation via a versioned cache name.
+- **No framework, on purpose.** Everything is plain DOM APIs and `localStorage` — a good way to see how the pieces actually fit together without a library doing the work for you.
+
+如果你是来学习的,这几个细节值得细看:
+
+- **防漂移计时。** 没有用 `setInterval` 每秒减一(这种方式会随时间累积误差,标签页切到后台时还会被浏览器*节流*),而是锚定一个目标结束时间戳,每次 tick 都用 `Date.now()` 重新计算剩余时间。切去别的标签页 25 分钟再回来,计时依然准确。
+- **不依赖音频文件的提示音。** 结束提示音是用 Web Audio API 实时合成的 —— 一个振荡器加一个增益节点,并做了平滑淡出,避免音调被突然切断产生的"咔哒"爆音。
+- **离线优先的 PWA。** Service Worker 在安装时预缓存应用文件,并采用缓存优先策略,所以没网也能正常运行。旧缓存通过带版本号的缓存名在激活时自动清理。
+- **刻意不用框架。** 全部基于原生 DOM API 和 `localStorage` —— 没有框架代劳,正好能看清各部分是如何真正拼在一起的。
+
+---
+
+## 📦 Tech stack / 技术栈
+
+- HTML5
+- CSS3 (gradients, flexbox, theme switching via body classes / 渐变、flexbox、通过 body class 切换主题)
+- Vanilla JavaScript (ES6+)
+- Web Audio API · Notifications API · Fullscreen API
+- Service Worker + Web App Manifest (PWA)
+- `localStorage` for persistence / 用于数据持久化
+
+---
+
+## 🚀 Run locally / 本地运行
+
+Because it uses a service worker, open it through a local server (not by double-clicking the file).
+因为用到了 Service Worker,请通过本地服务器打开(不要直接双击文件)。
+
+```bash
+# 1. Clone the repo / 克隆仓库
+git clone https://github.com/VV0611/pomodoro-timer.git
+cd pomodoro-timer
+
+# 2. Start any static server, e.g. with Python / 启动一个静态服务器,例如用 Python:
+python -m http.server 5500
+
+# 3. Open in your browser / 在浏览器打开:
+#    http://localhost:5500/timer.html
+```
+
+> Using VS Code? The **Live Server** extension works great — right-click `timer.html` → "Open with Live Server".
+> 用 VS Code 的话?装 **Live Server** 扩展很方便 —— 右键 `timer.html` → "Open with Live Server"。
+
+---
+
+## 📁 Project structure / 文件结构
+
+```
+pomodoro-timer/
+├── timer.html      # Markup / app structure  ·  页面结构
+├── timer.css       # Styles & theme          ·  样式与主题
+├── timer.js        # All the timer logic      ·  全部计时逻辑
+├── sw.js           # Service worker (offline) ·  Service Worker(离线缓存)
+├── manifest.json   # PWA manifest             ·  PWA 配置清单
+└── icon.svg        # App icon                 ·  应用图标
+```
+
+---
+
+## 📝 License / 许可
+
+Free to use and learn from. Feel free to fork it and make it your own.
+可自由使用和学习。欢迎 fork 并改造成你自己的版本。
