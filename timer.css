@@ -1,0 +1,1487 @@
+/* ============================================================
+   1. GLOBAL RESET & BASE STYLES
+   ============================================================ */
+
+* {
+  /* * means "select EVERY element on the page" */
+
+  margin: 0;
+  /* By default, browsers add spacing around elements.
+     margin: 0 removes all that default spacing so we start clean. */
+
+  padding: 0;
+  /* padding is the space INSIDE an element (between content and border).
+     We reset it to 0 as well. */
+
+  box-sizing: border-box;
+  /* VERY IMPORTANT concept:
+     Normally, if you say width: 200px, padding is ADDED on top of that
+     (so the real width becomes 220px if padding is 10px each side).
+
+     box-sizing: border-box changes this so:
+     width: 200px = the TOTAL width INCLUDING padding and border.
+     This makes layout math much easier and more predictable. */
+}
+
+body {
+  /* <body> is the full visible page area */
+
+  font-family: 'Segoe UI', Arial, sans-serif;
+  /* Sets the font for the ENTIRE page.
+     'Segoe UI' is clean and modern (used in Windows).
+     Arial is the fallback if Segoe UI isn't available.
+     sans-serif is the last resort (any non-serif font on the system). */
+
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  /* background creates a GRADIENT (gradual color change).
+     linear-gradient(135deg, ...) = diagonal gradient from top-left to bottom-right
+     #1a1a2e = very dark navy (start color)
+     #0f3460 = slightly lighter navy (end color)
+     The numbers like 0%, 50%, 100% are the positions along the gradient */
+
+  min-height: 100vh;
+  /* vh = "viewport height" = the height of the browser window.
+     100vh = 100% of the screen height.
+     min-height means "at LEAST this tall" (grows taller if content needs it). */
+
+  display: flex;
+  /* Flexbox is a layout system. It makes arranging items much easier.
+     display: flex turns this element into a "flex container".
+     Its CHILDREN become "flex items" that we can position easily. */
+
+  align-items: center;
+  /* Centers flex items VERTICALLY (up-down) within the flex container */
+
+  justify-content: center;
+  /* Centers flex items HORIZONTALLY (left-right) within the flex container */
+  /* Together, these two lines = center the card both ways on the page */
+
+  flex-direction: column;
+  /* By default, Flexbox lines items up HORIZONTALLY (side by side).
+     flex-direction: column changes it to VERTICAL (top to bottom).
+     Now the timer card and task card will stack on top of each other. */
+
+  gap: 20px;
+  /* gap: 20px = 20px of space BETWEEN each flex child (the two cards).
+     gap is a Flexbox shortcut — cleaner than adding margin-bottom manually. */
+
+  padding: 40px 20px;
+  /* Breathing room so the cards don't stick to the top/bottom/sides of the screen.
+     40px top & bottom, 20px left & right. */
+}
+
+
+/* ============================================================
+   2. THE CARD (the white rounded box in the middle)
+   ============================================================ */
+
+.card {
+  /* .card (dot prefix) = targets elements with class="card" */
+
+  position: relative;
+  /* position: relative means this element is the REFERENCE POINT
+     for any child elements that use position: absolute.
+     We need this so the ⚙ button can be pinned to the top-right corner
+     of the card specifically (not the whole page). */
+
+  background: rgba(255, 255, 255, 0.05);
+  /* rgba() = Red, Green, Blue, Alpha (transparency)
+     rgba(255, 255, 255, 0.05) = white with 5% opacity = very subtle white glass effect */
+
+  backdrop-filter: blur(20px);
+  /* This creates a FROSTED GLASS effect.
+     It blurs whatever is BEHIND the card element.
+     Only works if the background is semi-transparent. */
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  /* A thin, barely-visible white border around the card.
+     1px = 1 pixel thick
+     solid = solid line (not dashed)
+     rgba(255,255,255, 0.1) = 10% opacity white = subtle */
+
+  border-radius: 24px;
+  /* Rounds the corners of the card.
+     The higher the number, the more rounded.
+     24px = nicely rounded rectangle */
+
+  padding: 48px 40px;
+  /* padding: TOP/BOTTOM   LEFT/RIGHT
+     padding: 48px 40px = 48px top & bottom, 40px left & right
+     This is the space INSIDE the card between content and the card edge */
+
+  width: 400px;
+  /* Fixed width for the card — 400px gives more breathing room for all elements */
+
+  text-align: center;
+  /* Centers all TEXT inside the card horizontally */
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.5),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  /* box-shadow adds a DROP SHADOW — makes the card look like it's floating.
+     Format: HORIZONTAL OFFSET  VERTICAL OFFSET  BLUR  COLOR
+     0 20px 60px rgba(0,0,0,0.5) = shadow below (20px down, 60px spread, 50% black)
+     The second shadow (0 0 0 1px) = a tiny subtle outer ring */
+}
+
+
+/* ============================================================
+   3. MODE LABEL ("Focus" / "Break" text at the top)
+   ============================================================ */
+
+.mode-label {
+  font-size: 13px;
+  /* Sets text size. Default body text is usually 16px. 13px is smaller. */
+
+  font-weight: 600;
+  /* Font weight = boldness.
+     400 = normal, 700 = bold, 600 = semi-bold (between normal and bold) */
+
+  letter-spacing: 3px;
+  /* Adds space BETWEEN letters. 3px gives a nice "spaced out" look.
+     Great for labels and headings. */
+
+  text-transform: uppercase;
+  /* Makes all letters UPPERCASE regardless of what the HTML says.
+     "Focus" becomes "FOCUS" */
+
+  color: #e94560;
+  /* Sets text color. #e94560 is a warm red-pink (tomato color — fitting for Pomodoro 🍅) */
+
+  margin-bottom: 16px;
+  /* Adds 16px of space BELOW this element, pushing the timer down */
+
+  transition: color 0.5s ease;
+  /* transition makes changes ANIMATE smoothly instead of jumping instantly.
+     "color 0.5s ease" = when color changes, animate it over 0.5 seconds */
+}
+
+/* When body has class "break-mode", change the label color to green */
+.break-mode .mode-label {
+  color: #4ecca3;
+  /* #4ecca3 = mint green color, used for break mode */
+}
+
+
+/* ============================================================
+   4. TIMER DISPLAY (the big "25:00" number)
+   ============================================================ */
+
+.timer-display {
+  font-size: 96px;
+  /* VERY large font — this is the main visual element. 96px is bigger and easier to read at a glance */
+
+  font-weight: 700;
+  /* Bold */
+
+  color: #ffffff;
+  /* White text */
+
+  letter-spacing: 4px;
+  /* Slight spacing between characters (makes "25:00" look cleaner) */
+
+  margin-bottom: 24px;
+  /* Space below the timer */
+
+  font-variant-numeric: tabular-nums;
+  /* This is important! Without it, numbers can "jump" in width as they change
+     because "1" is thinner than "0".
+     tabular-nums = all numbers take the SAME width, so "11:11" and "00:00"
+     take the same horizontal space. The timer won't wobble. */
+
+  line-height: 1;
+  /* line-height controls the vertical space AROUND the text.
+     1 = line height equals the font size (no extra space above/below) */
+
+  transition: transform 0.1s ease;
+  /* Allows a brief "pulse" animation when seconds tick. */
+}
+
+/* A class we'll add briefly in JavaScript to create a tick animation */
+.timer-display.tick {
+  transform: scale(1.03);
+  /* scale() resizes the element.
+     1.03 = grow to 103% of normal size — a tiny "pulse" */
+}
+
+
+/* ============================================================
+   5. PROGRESS BAR
+   ============================================================ */
+
+.progress-bar-container {
+  /* The outer track (grey background) */
+  background: rgba(255, 255, 255, 0.1);
+  /* Semi-transparent white = looks like a dark grey track */
+
+  border-radius: 999px;
+  /* 999px = makes it fully pill-shaped (oval ends).
+     Using a huge number is a common trick to guarantee full rounding. */
+
+  height: 6px;
+  /* Track is 6 pixels tall — thin and subtle */
+
+  margin-bottom: 20px;
+  /* Space below the progress bar */
+
+  overflow: hidden;
+  /* If the inner bar somehow goes wider than the container, cut it off.
+     Also needed for the rounded corners to clip the inner bar correctly. */
+}
+
+.progress-bar {
+  /* The coloured fill inside the track */
+  height: 100%;
+  /* Fill the full height of the container (6px) */
+
+  width: 100%;
+  /* Starts at 100% = full. JavaScript will decrease this as time passes. */
+
+  background: linear-gradient(90deg, #e94560, #f5a623);
+  /* A left-to-right gradient from red-pink to orange.
+     90deg = horizontal (left to right) */
+
+  border-radius: 999px;
+  /* Match the container's rounded ends */
+
+  transition: width 1s linear;
+  /* IMPORTANT: When width changes, animate it over 1 second linearly.
+     This makes the progress bar smoothly shrink each second.
+     linear = constant speed (not easing in or out) */
+}
+
+/* Break mode: green progress bar */
+.break-mode .progress-bar {
+  background: linear-gradient(90deg, #4ecca3, #45b7d1);
+  /* Mint green to sky blue for break mode */
+}
+
+
+/* ============================================================
+   6. ROUND INFO ("Round 1 / 4")
+   ============================================================ */
+
+.round-info {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  /* 50% transparent white = subtle grey-ish */
+
+  margin-bottom: 32px;
+  letter-spacing: 1px;
+}
+
+
+/* ============================================================
+   7. BUTTONS LAYOUT
+   ============================================================ */
+
+.controls {
+  display: flex;
+  /* Makes buttons sit SIDE BY SIDE using Flexbox */
+
+  gap: 12px;
+  /* gap: 12px = 12px space between each flex item (button) */
+
+  justify-content: center;
+  /* Centers the buttons horizontally */
+
+  margin-bottom: 24px;
+}
+
+
+/* ============================================================
+   8. BUTTON BASE STYLES (shared by all buttons)
+   ============================================================ */
+
+.btn {
+  /* All three buttons share these styles via class="btn" */
+
+  padding: 12px 20px;
+  /* 12px top/bottom, 20px left/right — gives the button comfortable click area */
+
+  border: none;
+  /* Remove the default ugly browser border on buttons */
+
+  border-radius: 12px;
+  /* Rounded button corners */
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  /* Changes the mouse cursor to a hand (👆) when hovering the button.
+     By default, buttons show a pointer, but this makes it explicit. */
+
+  transition: all 0.2s ease;
+  /* "all" = animate ALL property changes (opacity, transform, background...)
+     0.2s = very quick 0.2 second animation
+     ease = starts fast, slows at the end */
+
+  letter-spacing: 0.5px;
+  flex: 1;
+  /* flex: 1 means "grow to take up equal share of available space".
+     With 3 buttons and flex: 1 each, they each take 1/3 of the row width. */
+
+  max-width: 100px;
+  /* But don't let them grow wider than 100px */
+}
+
+/* Hover state (when mouse is over the button) */
+.btn:hover {
+  transform: translateY(-2px);
+  /* Move the button UP by 2 pixels — gives a "lifting" feel */
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  /* Add a shadow when hovering — enhances the "lift" effect */
+}
+
+/* Active state (the moment the button is being CLICKED / pressed down) */
+.btn:active {
+  transform: translateY(0px);
+  /* Push the button back to its original position — simulates pressing */
+}
+
+/* Disabled state (button is greyed out and unclickable) */
+.btn:disabled {
+  opacity: 0.35;
+  /* 35% opacity = looks faded/greyed out */
+
+  cursor: not-allowed;
+  /* Shows a ⛔ cursor on hover to signal "can't click this" */
+
+  transform: none;
+  /* Disabled buttons shouldn't lift on hover */
+
+  box-shadow: none;
+}
+
+
+/* ============================================================
+   9. INDIVIDUAL BUTTON COLORS
+   ============================================================ */
+
+.btn-start {
+  background: linear-gradient(135deg, #e94560, #c23152);
+  /* Red-pink gradient for Start */
+  color: white;
+}
+
+.btn-pause {
+  background: linear-gradient(135deg, #f5a623, #e8941a);
+  /* Orange gradient for Pause */
+  color: white;
+}
+
+.btn-reset {
+  background: rgba(255, 255, 255, 0.1);
+  /* Transparent/ghost style for Reset */
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Break mode button colors */
+.break-mode .btn-start {
+  background: linear-gradient(135deg, #4ecca3, #38b28e);
+}
+
+
+/* ============================================================
+   10. STATUS MESSAGE
+   ============================================================ */
+
+.status-message {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.55);
+  line-height: 1.5;
+  min-height: 20px;
+  transition: color 0.3s ease;
+}
+
+/* Fade-in animation played when a motivational quote appears */
+@keyframes quoteFade {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.status-message.quote-flash {
+  animation: quoteFade 0.5s ease;
+  /* JS adds this class when the quote is set, removes it 500ms later.
+     The quote gently rises into view instead of snapping in. */
+}
+
+
+/* ============================================================
+   11. BREAK MODE BODY BACKGROUND
+   ============================================================ */
+
+.break-mode {
+  /* When JavaScript adds class="break-mode" to <body>,
+     the background color shifts to a green-tinted gradient */
+  background: linear-gradient(135deg, #0d2137 0%, #0a3d2e 50%, #0f4c35 100%);
+}
+
+
+/* ============================================================
+   11b. LONG BREAK MODE
+   Triggered after completing all 4 rounds — a deeper rest.
+   Uses purple instead of green to feel distinct from short break.
+   ============================================================ */
+
+.long-break-mode {
+  background: linear-gradient(135deg, #1a0a2e 0%, #2d1060 50%, #1a0a40 100%);
+  /* Deep purple gradient — clearly different from focus (navy) and break (green) */
+}
+
+.long-break-mode .mode-label {
+  color: #b388ff;
+  /* Soft lavender purple for the "LONG BREAK" label */
+}
+
+.long-break-mode .progress-bar {
+  background: linear-gradient(90deg, #b388ff, #9c27b0);
+  /* Purple progress bar to match the theme */
+}
+
+.long-break-mode .btn-start {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+  /* Purple Start button during long break */
+}
+
+.long-break-mode .btn-add-task {
+  background: linear-gradient(135deg, #b388ff, #9c27b0);
+  box-shadow: 0 4px 15px rgba(179, 136, 255, 0.35);
+}
+
+.long-break-mode .btn-apply {
+  background: linear-gradient(135deg, #b388ff, #9c27b0);
+}
+
+
+/* ============================================================
+   12. COMPLETION ANIMATION
+   ============================================================ */
+
+/* We'll briefly add class "session-complete" to the card for a flash effect */
+@keyframes completePulse {
+  /* @keyframes defines a named animation sequence */
+  0%   { box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  50%  { box-shadow: 0 20px 80px rgba(233, 69, 96, 0.8); }
+  100% { box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+  /* At 50% through the animation, glow red. Returns to normal at 100%. */
+}
+
+.session-complete {
+  animation: completePulse 0.6s ease;
+  /* animation: NAME DURATION TIMING-FUNCTION
+     Plays the completePulse animation once over 0.6 seconds */
+}
+
+
+/* ============================================================
+   13. NOTIFICATION BELL BUTTON (🔔 top-left of card)
+   ============================================================ */
+
+.btn-bell {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  /* Pinned to the TOP-LEFT corner of the card.
+     Mirrors the ⚙ button which is at top: 16px; right: 16px.
+     Both use position: absolute — placed relative to .card (position: relative). */
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 15px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.btn-bell:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);
+  /* Scale up slightly on hover instead of rotating — bell feels natural shaking */
+}
+
+/* When notifications are ON, the bell glows gold */
+.btn-bell.active {
+  background: rgba(245, 166, 35, 0.25);
+  border-color: rgba(245, 166, 35, 0.4);
+  /* rgba(245, 166, 35, ...) = a warm golden yellow — matches the 🔔 emoji */
+}
+
+
+/* ============================================================
+   14. SESSION STATS ROW (🍅 count + 🔥 streak, side by side)
+   ============================================================ */
+
+.session-stats-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+  /* Flexbox lines up the tomato count and the streak count side by side,
+     centred. gap: 20px adds space between the two counters. */
+}
+
+.pomodoro-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+  /* margin-bottom removed — the parent .session-stats-row handles spacing now */
+  /* Sits between the round counter and the control buttons.
+     Same subtle style as .round-info so it doesn't compete visually. */
+
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* cubic-bezier(0.34, 1.56, 0.64, 1) = a "spring" easing curve.
+     Numbers > 1 create an OVERSHOOT effect — the element bounces slightly.
+     This makes the count feel alive when it increments. */
+}
+
+/* Class added briefly by JS when count increments — creates a bounce */
+.pomodoro-count.bump {
+  transform: scale(1.3);
+  color: #e94560;
+}
+
+/* 🔥 Streak counter — mirrors the pomodoro-count style */
+.streak-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.streak-count.bump {
+  transform: scale(1.3);
+  color: #f5a623; /* Orange like a flame */
+}
+
+
+/* ============================================================
+   14b. ACTIVE TASK DISPLAY (📌 pin bar above timer)
+   ============================================================ */
+
+.active-task-display {
+  display: none;
+  /* Hidden by default. JS adds class "visible" to show it. */
+
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(233, 69, 96, 0.1);
+  border: 1px solid rgba(233, 69, 96, 0.25);
+  border-radius: 20px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 100%;
+}
+
+.active-task-display.visible {
+  display: flex;
+  /* flex makes the icon, text, and × button line up horizontally */
+}
+
+#activeTaskText {
+  flex: 1;
+  /* Takes up all space between the pin icon and the × button */
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  /* If the task name is very long, cut it off with … instead of wrapping */
+}
+
+.active-task-clear {
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.active-task-clear:hover {
+  color: #e94560;
+}
+
+/* In break/long-break mode, the bar changes colour to match the theme */
+.break-mode .active-task-display {
+  background: rgba(78, 204, 163, 0.1);
+  border-color: rgba(78, 204, 163, 0.25);
+}
+
+.long-break-mode .active-task-display {
+  background: rgba(179, 136, 255, 0.1);
+  border-color: rgba(179, 136, 255, 0.25);
+}
+
+
+/* ============================================================
+   14c. AMBIENT SOUND CONTROLS
+   ============================================================ */
+
+.ambient-section {
+  margin-top: 14px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.ambient-label {
+  display: block;           /* sit on its own line above the grid */
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.25);
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+.ambient-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4 buttons per row → 2 rows of 4 */
+  gap: 6px;
+  max-width: 200px;
+  margin: 0 auto;           /* centre the grid horizontally */
+}
+
+.btn-ambient {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 14px;
+  width: 32px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0.5;
+  /* Faint by default — unobtrusive */
+}
+
+.btn-ambient:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+  transform: scale(1.1);
+}
+
+.btn-ambient.active {
+  opacity: 1;
+  background: rgba(233, 69, 96, 0.2);
+  border-color: rgba(233, 69, 96, 0.4);
+  /* Active button glows pink so user knows which sound is playing */
+}
+
+.break-mode .btn-ambient.active {
+  background: rgba(78, 204, 163, 0.2);
+  border-color: rgba(78, 204, 163, 0.4);
+}
+
+.long-break-mode .btn-ambient.active {
+  background: rgba(179, 136, 255, 0.2);
+  border-color: rgba(179, 136, 255, 0.4);
+}
+
+/* ─── YouTube embedded player (revealed when a sound is selected) ── */
+.yt-container {
+  display: none;
+  /* Hidden by default. setAmbient() adds class "active" to show it. */
+
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  /* border-radius + overflow:hidden = the YouTube iframe gets rounded corners */
+}
+
+.yt-container.active {
+  display: block;
+}
+
+.yt-container iframe {
+  display: block;
+  /* "block" removes the small inline gap that appears below iframes by default */
+  width: 100%;
+  height: 180px;
+  border: 0;
+}
+
+
+/* ============================================================
+   24b. TASK PIN BUTTON (📌 on each task row)
+   ============================================================ */
+
+.task-pin {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  opacity: 0;
+  /* Hidden by default — reveals on row hover, like the delete button */
+}
+
+.task-item:hover .task-pin {
+  opacity: 0.5;
+}
+
+.task-pin.pinned {
+  opacity: 1 !important;
+  /* Always visible when this task IS the active task */
+  filter: drop-shadow(0 0 4px rgba(233, 69, 96, 0.6));
+  /* Subtle pink glow to highlight the pinned task */
+}
+
+.task-item.done .task-pin {
+  display: none;
+  /* Hide pin button on completed tasks — can't focus on something already done */
+}
+
+
+/* ============================================================
+   25. WEEKLY STATS CARD
+   ============================================================ */
+
+.stats-card {
+  width: 360px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 20px 28px 16px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  /* Same glass style as the other two cards */
+}
+
+.stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.stats-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.week-total {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 3px 10px;
+  border-radius: 999px;
+  /* Pill badge — same style as .task-count */
+}
+
+#weeklyChart {
+  display: block;
+  /* Canvas is inline by default; block removes the small gap below it */
+  width: 100%;
+  /* CSS width fills the card; the pixel resolution is set by the HTML attribute */
+}
+
+
+/* ============================================================
+   15. KEYBOARD HINTS (subtle bar at bottom of timer card)
+   ============================================================ */
+
+.keyboard-hints {
+  margin-top: 14px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.2);
+  letter-spacing: 0.5px;
+  /* Very faint — just enough for users who notice it */
+}
+
+.keyboard-hints kbd {
+  /* <kbd> is a semantic HTML tag for keyboard keys (like <code> for code).
+     We style it to look like a tiny physical key. */
+  display: inline-block;
+  padding: 1px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 10px;
+}
+
+
+/* ============================================================
+   16. SETTINGS BUTTON (the ⚙ gear icon, top-right of card)
+   ============================================================ */
+
+.btn-settings {
+  position: absolute;
+  /* position: absolute removes this element from the normal flow.
+     It gets placed relative to the nearest parent with position: relative.
+     That parent is .card (we added position: relative to it earlier).
+
+     NORMAL FLOW = elements stack top-to-bottom like stacking books.
+     ABSOLUTE position = we can place it EXACTLY where we want,
+     like using a ruler to pin a note anywhere on a board. */
+
+  top: 16px;
+  right: 16px;
+  /* top: 16px   = 16px from the TOP edge of the card
+     right: 16px = 16px from the RIGHT edge of the card
+     Together = pinned to the top-right corner */
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  cursor: pointer;
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* display: flex + align-items + justify-content = center the ⚙ icon
+     both horizontally and vertically inside the 32×32 button */
+
+  transition: all 0.2s ease;
+}
+
+.btn-settings:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: rotate(30deg);
+  /* On hover, spin the gear 30 degrees — a fun visual detail */
+}
+
+/* When settings are open, keep the gear looking "active" */
+.btn-settings.active {
+  background: rgba(233, 69, 96, 0.3);
+  color: #e94560;
+  transform: rotate(90deg);
+}
+
+
+/* ============================================================
+   16b. FULLSCREEN BUTTON (⛶ next to ⚙, top-right of card)
+   ============================================================ */
+
+.btn-fullscreen {
+  position: absolute;
+  top: 16px;
+  right: 54px;
+  /* right: 54px = 16px margin + 32px settings button + 6px gap */
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  /* Matches .btn-settings look — consistent corner-button style */
+}
+
+.btn-fullscreen:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  transform: scale(1.08);
+}
+
+
+/* ============================================================
+   14. SETTINGS PANEL (the expandable form below the gear)
+   ============================================================ */
+
+.settings-panel {
+  /* Hidden by default — height: 0 and overflow: hidden collapses it */
+  max-height: 0;
+  overflow: hidden;
+  /* max-height: 0 = takes up no space (collapses to nothing)
+     overflow: hidden = anything that would "stick out" is clipped
+
+     We use max-height (not display:none) here because
+     max-height can be ANIMATED smoothly with transition.
+     display:none → display:block cannot be animated. */
+
+  transition: max-height 0.35s ease;
+  /* When max-height changes (0 → 200px), animate it over 0.35 seconds.
+     This creates a smooth "slide down" opening effect. */
+
+  margin-bottom: 0;
+}
+
+/* When JavaScript adds class "settings-open", the panel slides open */
+.settings-panel.settings-open {
+  max-height: 260px;
+  /* Increased from 200px to 260px to fit the new Long Break row */
+  /* 200px is enough space to show all the inputs.
+     The actual content might only be ~140px tall,
+     but we set a bigger value to give the transition room to work. */
+
+  margin-bottom: 20px;
+}
+
+/* The row that holds [label] [input] [min] */
+.settings-row {
+  display: flex;
+  align-items: center;
+  /* Flexbox: line up label, input, and "min" text side by side */
+
+  gap: 10px;
+  margin-bottom: 10px;
+  /* 10px space between each row */
+}
+
+.settings-row label {
+  /* label inside .settings-row */
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  font-weight: 600;
+  width: 44px;
+  text-align: right;
+  /* Fixed width so both labels ("Focus" and "Break") align neatly */
+}
+
+.settings-row input {
+  /* The number input box */
+  width: 64px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+
+  /* Remove browser's default number input spin arrows (they look different per browser) */
+  appearance: textfield;      /* standard property (modern browsers) */
+  -moz-appearance: textfield; /* Firefox fallback */
+}
+
+/* Chrome/Safari/Edge: hide the spin arrows */
+.settings-row input::-webkit-outer-spin-button,
+.settings-row input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.settings-row input:focus {
+  outline: none;
+  /* outline is the default blue ring browsers add when you click an input.
+     We remove it because our own border-color change looks cleaner. */
+
+  border-color: #e94560;
+  /* Highlight the border in red-pink when the input is focused */
+}
+
+.settings-row span {
+  /* The "min" text beside the input */
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+}
+
+/* Error message text */
+.settings-error {
+  color: #e94560;
+  font-size: 12px;
+  min-height: 16px;
+  /* min-height so the layout doesn't jump when text appears/disappears */
+  margin-bottom: 8px;
+}
+
+/* The Apply button */
+.btn-apply {
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  /* width: 100% = stretches to fill the full settings panel width */
+}
+
+.btn-apply:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.4);
+}
+
+/* Break mode: Apply button turns green */
+.break-mode .btn-apply {
+  background: linear-gradient(135deg, #4ecca3, #38b28e);
+}
+
+
+/* ============================================================
+   15. TASK CARD (the second card below the timer)
+   ============================================================ */
+
+.task-card {
+  width: 360px;
+  /* Same width as the timer card — they line up neatly */
+
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 24px 28px 20px;
+  /* Less padding than the timer card (28px sides, 24px top, 20px bottom)
+     Tasks need more compact spacing since there can be many items */
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+
+/* ============================================================
+   16. TASK CARD HEADER ("Today's Tasks"  +  "2 / 5")
+   ============================================================ */
+
+.task-header {
+  display: flex;
+  justify-content: space-between;
+  /* space-between = push children to opposite ends:
+     [✏️ Today's Tasks]          [2 / 5]
+     left side                   right side */
+
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.task-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.task-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.07);
+  padding: 3px 10px;
+  border-radius: 999px;
+  /* 999px = fully pill-shaped badge */
+}
+
+
+/* ============================================================
+   17. TASK INPUT ROW (text field + "+" button)
+   ============================================================ */
+
+.task-input-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.task-input {
+  flex: 1;
+  /* flex: 1 = "take up all leftover space"
+     The + button has a fixed size; the input fills the rest of the row */
+
+  padding: 11px 16px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 14px;
+  color: white;
+  font-size: 14px;
+  font-family: inherit;
+  /* inherit = use the same font as the rest of the page (Segoe UI) */
+
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.task-input::placeholder {
+  /* ::placeholder is a pseudo-element that styles the placeholder text */
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.task-input:focus {
+  outline: none;
+  border-color: #e94560;
+  background: rgba(255, 255, 255, 0.1);
+  /* Highlight pink when user clicks the input */
+}
+
+.btn-add-task {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  border: none;
+  background: linear-gradient(135deg, #e94560, #c23152);
+  color: white;
+  font-size: 22px;
+  font-weight: 300;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  /* flex-shrink: 0 = don't let the button shrink even if there's little space.
+     The input should shrink instead. */
+
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 15px rgba(233, 69, 96, 0.35);
+}
+
+.btn-add-task:hover {
+  transform: scale(1.08) rotate(90deg);
+  /* scale(1.08) = grow slightly
+     rotate(90deg) = the + rotates 90° to look like ✕ (playful!) */
+  box-shadow: 0 6px 20px rgba(233, 69, 96, 0.5);
+}
+
+.btn-add-task:active {
+  transform: scale(0.95);
+}
+
+/* Break mode: add button turns green */
+.break-mode .btn-add-task {
+  background: linear-gradient(135deg, #4ecca3, #38b28e);
+  box-shadow: 0 4px 15px rgba(78, 204, 163, 0.35);
+}
+
+
+/* ============================================================
+   18. TASK LIST CONTAINER
+   ============================================================ */
+
+.task-list {
+  max-height: 220px;
+  overflow-y: auto;
+  /* max-height + overflow-y: auto = if there are too many tasks,
+     the list scrolls internally instead of making the whole page taller */
+
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  /* Each task item has 8px of space between them */
+}
+
+/* Custom scrollbar styling (Chrome / Edge / Safari) */
+.task-list::-webkit-scrollbar {
+  width: 4px;
+  /* ::-webkit-scrollbar targets the scrollbar element itself */
+}
+
+.task-list::-webkit-scrollbar-track {
+  background: transparent;
+  /* The "track" is the background rail of the scrollbar — make it invisible */
+}
+
+.task-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+  /* The "thumb" is the draggable part — subtle white pill */
+}
+
+
+/* ============================================================
+   19. EMPTY STATE MESSAGE
+   ============================================================ */
+
+.task-empty {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 13px;
+  padding: 20px 0;
+  /* Shown when there are zero tasks */
+}
+
+
+/* ============================================================
+   20. TASK ITEM (each individual task row)
+   ============================================================ */
+
+@keyframes taskSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+    /* Start: invisible + slightly above + slightly small */
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    /* End: normal position and size */
+  }
+}
+
+.task-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  transition: background 0.2s ease;
+
+  animation: taskSlideIn 0.25s ease;
+  /* Every time a task-item is added to the DOM, it plays taskSlideIn.
+     0.25s = quarter second — fast enough to feel snappy */
+}
+
+.task-item:hover {
+  background: rgba(255, 255, 255, 0.09);
+  /* Subtle highlight when hovering the task row */
+}
+
+
+/* ============================================================
+   21. TASK CHECKBOX BUTTON (the circle ○ / ✓ button)
+   ============================================================ */
+
+.task-check {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  /* 50% = perfect circle */
+
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  background: transparent;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  flex-shrink: 0;
+  /* flex-shrink: 0 = circle stays 26×26, never squishes */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.task-check:hover {
+  border-color: #e94560;
+  background: rgba(233, 69, 96, 0.15);
+  /* Pink glow on hover — hints "click to complete" */
+}
+
+/* When the task is DONE, the circle fills with pink */
+.task-item.done .task-check {
+  background: linear-gradient(135deg, #e94560, #c23152);
+  border-color: transparent;
+  box-shadow: 0 2px 8px rgba(233, 69, 96, 0.4);
+}
+
+
+/* ============================================================
+   22. TASK TEXT
+   ============================================================ */
+
+.task-text {
+  flex: 1;
+  /* flex: 1 = takes all remaining space between the check and delete button */
+
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.4;
+  word-break: break-word;
+  /* word-break: break-word = long words wrap to next line instead of overflowing */
+
+  transition: all 0.3s ease;
+}
+
+/* When the task is DONE, text fades and gets a strikethrough */
+.task-item.done .task-text {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.3);
+  /* The strikethrough + fade together clearly communicate "finished" */
+}
+
+
+/* ============================================================
+   23. TASK DELETE BUTTON (the ✕ button)
+   ============================================================ */
+
+.task-delete {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 12px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  opacity: 0;
+  /* HIDDEN by default — only show when the task row is hovered.
+     This keeps the UI clean when you're not hovering. */
+}
+
+.task-item:hover .task-delete {
+  opacity: 1;
+  /* Reveal the delete button when the parent .task-item is hovered */
+}
+
+.task-delete:hover {
+  background: rgba(233, 69, 96, 0.25);
+  color: #e94560;
+  transform: scale(1.15);
+  /* The × button goes pink when you hover it specifically */
+}
+
+
+/* ============================================================
+   24. TASK REMOVE ANIMATION (plays when a task is being deleted)
+   ============================================================ */
+
+@keyframes taskSlideOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    max-height: 60px;
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateX(10px);
+    max-height: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+    /* Collapse the height to 0 so the items below slide up smoothly */
+  }
+}
+
+.task-item.task-removing {
+  animation: taskSlideOut 0.28s ease forwards;
+  /* forwards = keep the final state (opacity:0, height:0) after animation ends
+     so the element stays invisible until JS removes it from the DOM */
+  pointer-events: none;
+  /* pointer-events: none = ignore any clicks during the removal animation */
+}
+
+
+/* ============================================================
+   FULLSCREEN MODE
+   ─────────────────────────────────────────────────────────────
+   When the user clicks the fullscreen button, the browser
+   Fullscreen API makes <html> fill the entire screen.
+
+   The :fullscreen pseudo-class applies when ANY ancestor is fullscreen.
+   We use it to:
+     • Remove distractions (hide task list and stats card)
+     • Make the timer BIG and dramatic
+     • Remove extra padding so the card truly centers
+
+   WHY two versions (:fullscreen and :-webkit-full-screen)?
+   Safari still uses the older -webkit- prefix, so we write both
+   to ensure the styles work in Chrome, Edge, Firefox, AND Safari.
+   ============================================================ */
+
+/* ── Body: remove extra padding so card centers cleanly ── */
+:fullscreen body,
+:-webkit-full-screen body {
+  padding: 20px;
+  gap: 0;
+}
+
+/* ── Hide secondary cards — focus on the timer only ── */
+:fullscreen .task-card,
+:fullscreen .stats-card,
+:-webkit-full-screen .task-card,
+:-webkit-full-screen .stats-card {
+  display: none;
+}
+
+/* ── Main card: wider, more spacious ── */
+:fullscreen .card,
+:-webkit-full-screen .card {
+  width: min(560px, 92vw);
+  padding: 64px 60px;
+}
+
+/* ── Timer: MUCH bigger — the whole point of fullscreen ── */
+:fullscreen .timer-display,
+:-webkit-full-screen .timer-display {
+  font-size: 140px;
+  margin-bottom: 32px;
+  letter-spacing: 6px;
+}
+
+/* ── Mode label: slightly larger to match the bigger timer ── */
+:fullscreen .mode-label,
+:-webkit-full-screen .mode-label {
+  font-size: 16px;
+  letter-spacing: 5px;
+  margin-bottom: 24px;
+}
+
+/* ── Round info: bigger ── */
+:fullscreen .round-info,
+:-webkit-full-screen .round-info {
+  font-size: 16px;
+  margin-bottom: 40px;
+}
+
+/* ── Session stats row: bigger emoji counts ── */
+:fullscreen .session-stats-row,
+:-webkit-full-screen .session-stats-row {
+  font-size: 20px;
+  gap: 32px;
+  margin-bottom: 32px;
+}
+
+/* ── Buttons: larger hit targets ── */
+:fullscreen .controls,
+:-webkit-full-screen .controls {
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+:fullscreen .btn,
+:-webkit-full-screen .btn {
+  padding: 14px 32px;
+  font-size: 16px;
+}
+
+/* ── Status message: slightly bigger ── */
+:fullscreen .status-message,
+:-webkit-full-screen .status-message {
+  font-size: 15px;
+  margin-bottom: 0;
+}
+
+/* ── Hide ambient controls and keyboard hints (cleaner focus) ── */
+:fullscreen .ambient-section,
+:fullscreen .keyboard-hints,
+:-webkit-full-screen .ambient-section,
+:-webkit-full-screen .keyboard-hints {
+  display: none;
+}
