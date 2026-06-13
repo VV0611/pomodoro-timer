@@ -20,7 +20,7 @@
                If not cached, try the real network.
 */
 
-const CACHE_NAME = "pomodoro-v3";
+const CACHE_NAME = "pomodoro-v4";
 /*
   Cache name = a key for a "storage bucket" in the browser.
   The "v1" suffix is important: when we update the app, we change
@@ -40,6 +40,12 @@ const ASSETS_TO_CACHE = [
   "./sounds/lofi.mp3",
   "./sounds/jazz1.mp3",
   "./sounds/jazz2.mp3",
+  "./cats/idle-cat.png",
+  "./cats/focus-cat.png",
+  "./cats/paused-cat.png",
+  "./cats/shortbreak-cat.png",
+  "./cats/longbreak-cat.png",
+  "./cats/done-cat.png",
 ];
 /*
   These are the files we pre-cache when the SW installs.
