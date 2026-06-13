@@ -37,6 +37,9 @@
     It does NOT appear on the page itself.
   -->
 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="timer.css">
   <!--
     <link> connects this HTML file to our CSS file.
@@ -52,7 +55,7 @@
     - display: "standalone" = no browser chrome when installed (feels native)
   -->
 
-  <meta name="theme-color" content="#e94560">
+  <meta name="theme-color" content="#e0a0a8">
   <!--
     theme-color tints the browser's address bar and task switcher
     to match the app's accent color. On Android Chrome it turns
@@ -209,6 +212,16 @@
       We give it class="card" so CSS can style it as a white rounded card.
       Think of a div as an empty cardboard box — it holds things inside it.
     -->
+
+    <!-- ---- CAT IMAGE (switches by timer state via CSS body classes) ---- -->
+    <div class="cat-wrapper">
+      <img class="cat-image cat-idle"        src="cats/idle-cat.png"        alt="" aria-hidden="true">
+      <img class="cat-image cat-focus"       src="cats/focus-cat.png"       alt="" aria-hidden="true">
+      <img class="cat-image cat-short-break" src="cats/shortbreak-cat.png"  alt="" aria-hidden="true">
+      <img class="cat-image cat-long-break"  src="cats/longbreak-cat.png"   alt="" aria-hidden="true">
+      <img class="cat-image cat-paused"      src="cats/paused-cat.png"      alt="" aria-hidden="true">
+      <img class="cat-image cat-done"        src="cats/done-cat.png"        alt="" aria-hidden="true">
+    </div>
 
     <!-- ---- MODE LABEL (shows "Focus" or "Break") ---- -->
     <div class="mode-label" id="modeLabel">Focus</div>

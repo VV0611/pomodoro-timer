@@ -324,6 +324,9 @@ function startTimer(autoStart = false) {
     This prevents starting multiple overlapping timers.
   */
 
+  document.body.classList.remove("paused");
+  if (isFocusMode) document.body.classList.add("running");
+
   isRunning = true;
 
   // Update button states
@@ -428,6 +431,7 @@ function sessionComplete() {
   */
 
   isRunning = false;
+  document.body.classList.remove("running");
 
   // Play a beep — pass "focus" if focus just ended, "break" if break just ended
   playBeep(isFocusMode ? "focus" : "break");
@@ -479,6 +483,8 @@ function sessionComplete() {
       */
       isLongBreak = true;
       document.body.classList.add("long-break-mode");
+      document.body.classList.add("done");
+      setTimeout(() => document.body.classList.remove("done"), 600);
       /*
         Adding "long-break-mode" to <body> triggers ALL the purple CSS rules:
           .long-break-mode { background: purple gradient }
@@ -558,6 +564,8 @@ function pauseTimer() {
 
   clearInterval(intervalId); // Stop the countdown
   isRunning = false;
+  document.body.classList.remove("running");
+  document.body.classList.add("paused");
 
   btnStart.disabled = false;  // Re-enable Start (so they can resume)
   btnPause.disabled = true;   // Grey out Pause (can't pause what's stopped)
@@ -582,9 +590,8 @@ function resetTimer() {
   activeTaskId = null;         // Unpin any active task
   updateActiveTaskDisplay();   // Hide the 📌 bar
 
-  // Remove ALL mode classes — covers short break, long break, and focus
-  document.body.classList.remove("break-mode");
-  document.body.classList.remove("long-break-mode");
+  // Remove ALL mode classes — covers all states
+  document.body.classList.remove("break-mode", "long-break-mode", "running", "paused", "done");
   modeLabel.textContent = "Focus";
 
   // Reset button states
