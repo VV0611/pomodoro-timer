@@ -311,7 +311,12 @@ function updateRoundInfo() {
    This runs when the user clicks the ▶ Start button.
    ============================================================= */
 
-function startTimer() {
+function startTimer(autoStart = false) {
+  /*
+    autoStart = true when called automatically from sessionComplete() (break auto-start).
+    In that case we skip the status message here — sessionComplete() already set a
+    more informative completion message that we don't want to overwrite.
+  */
   if (isRunning) return;
   /*
     Guard clause: if the timer is ALREADY running, stop here.
@@ -325,11 +330,14 @@ function startTimer() {
   btnStart.disabled = true;  // Grey out Start (can't start twice)
   btnPause.disabled = false; // Enable Pause
 
-  // Show a motivational quote for focus sessions; a rest message for breaks
-  if (isFocusMode) {
-    showQuote(); // Pick a random quote from the QUOTES array (Feature D)
-  } else {
-    statusMessage.textContent = "Rest up — you've earned it! ☕";
+  // Show a motivational quote for focus sessions; a rest message for breaks.
+  // Skip when auto-started by sessionComplete() — it already set the right message.
+  if (!autoStart) {
+    if (isFocusMode) {
+      showQuote(); // Pick a random quote from the QUOTES array (Feature D)
+    } else {
+      statusMessage.textContent = "Rest up — you've earned it! ☕";
+    }
   }
   /*
     Ternary operator: condition ? valueIfTrue : valueIfFalse
@@ -495,7 +503,7 @@ function sessionComplete() {
       showNotification("Focus session complete! 🎉", "Great work — your break is starting now ☕");
     }
 
-    startTimer(); // Auto-start the break (short or long)
+    startTimer(true); // Auto-start the break; pass true to preserve the completion message
 
   } else {
     // BREAK (short or long) just ended → switch back to FOCUS
@@ -1729,8 +1737,16 @@ function renderWeeklyChart() {
     Think of it as picking up a paintbrush.
   */
 
-  const W = weeklyChart.width;  // 296 (from HTML attribute)
-  const H = weeklyChart.height; // 110
+  // HiDPI / Retina fix: scale the canvas backing store to the device pixel ratio.
+  // Without this, one CSS pixel = one canvas pixel, making the chart blurry on
+  // retina displays (where one CSS pixel = 2 or 3 physical pixels).
+  const dpr = window.devicePixelRatio || 1;
+  const W = 296; // logical CSS pixels (matches the HTML width attribute)
+  const H = 110;
+  weeklyChart.width  = W * dpr;
+  weeklyChart.height = H * dpr;
+  ctx.scale(dpr, dpr);
+  // CSS width: 100% in the stylesheet keeps the element the right visual size.
 
   ctx.clearRect(0, 0, W, H);
   /*
@@ -1850,106 +1866,142 @@ function renderWeeklyChart() {
 
 /* =============================================================
    ╔══════════════════════════════════════════════════════════╗
-   ║   FEATURE G: AMBIENT SOUNDS — YouTube IFrame Player      ║
+   ║   FEATURE G: AMBIENT SOUNDS — HTML5 Audio + MP3          ║
    ╚══════════════════════════════════════════════════════════╝
-   Real YouTube videos play as background music.
-   We use the YouTube IFrame Player API for JavaScript control
-   (play, stop, switch tracks) — a plain <iframe> can't do this.
+   Local MP3 files play as background music using the browser's
+   built-in <audio> element — no third-party API, no ads, works offline.
 
-   Lifecycle:
-     1. <script src="youtube.com/iframe_api"> loads in <head> (async).
-     2. YouTube calls window.onYouTubeIframeAPIReady() when ready.
-     3. We create one YT.Player — it injects an <iframe> into #yt-player.
-     4. setAmbient(type) calls loadVideoById() to switch tracks.
+   Files expected in the sounds/ subfolder:
+     sounds/ocean.mp3   sounds/rain.mp3   sounds/forest.mp3
+     sounds/lofi.mp3    sounds/jazz1.mp3  sounds/jazz2.mp3
    ============================================================= */
 
-// ─── Map each sound button type → YouTube video ID ───────────
-const YOUTUBE_VIDEOS = {
-  ocean:  "32SR2_4XGWw",  // 海浪声
-  rain:   "N2m4RFhCqKg",  // 钢琴 + 雨水声
-  forest: "_u95mLIAxvg",  // 钢琴 + 森林
-  lofi:   "Y9mRoCerrpY",  // Lo-fi music
-  jazz1:  "c7-81aUdLTI",  // Jazz mix 1
-  jazz2:  "A9ijHVo72c0",  // Jazz mix 2
+// ─── Track metadata: file path + display info ────────────────
+const AUDIO_TRACKS = {
+  ocean:  { src: "sounds/ocean.mp3",  emoji: "🌊", name: "海浪声"      },
+  rain:   { src: "sounds/rain.mp3",   emoji: "🌧", name: "钢琴 + 雨水" },
+  forest: { src: "sounds/forest.mp3", emoji: "🌲", name: "钢琴 + 森林" },
+  lofi:   { src: "sounds/lofi.mp3",   emoji: "🎵", name: "Lo-fi music" },
+  jazz1:  { src: "sounds/jazz1.mp3",  emoji: "🎷", name: "Jazz mix 1"  },
+  jazz2:  { src: "sounds/jazz2.mp3",  emoji: "🎸", name: "Jazz mix 2"  },
 };
 
-let ytPlayer = null;   // YT.Player instance — created once, reused
-let ytReady  = false;  // becomes true after onYouTubeIframeAPIReady fires
+// One shared Audio element — we swap its src to change tracks.
+// Reusing one element avoids creating/destroying audio contexts on every switch.
+const audioEl = new Audio();
+audioEl.loop = true; // each track loops automatically until the user stops it
 
-// YouTube IFrame API calls this function automatically once it has loaded.
-// Must be on window (global scope) — the API looks for window.onYouTubeIframeAPIReady.
-window.onYouTubeIframeAPIReady = function () {
+// ─── Update progress bar + current-time label as the track plays ──
+audioEl.ontimeupdate = function () {
+  if (!audioEl.duration) return; // metadata not loaded yet — skip
+
   /*
-    new YT.Player(elementId, config) replaces the <div id="yt-player">
-    with a real <iframe src="https://www.youtube.com/embed/..."> element.
-
-    We create the player with no videoId so it starts blank.
-    The actual video is loaded later by setAmbient() → loadYouTubeVideo().
-
-    WHY create the player once and reuse it?
-    Creating a new YT.Player each time you switch sounds causes a visible
-    "flash" as the iframe reloads. loadVideoById() swaps the video
-    instantly inside the same iframe — much smoother.
+    audioEl.currentTime = how many seconds have played so far
+    audioEl.duration    = total length of the track in seconds
+    pct = percentage of the track that has played → bar width
   */
-  ytPlayer = new YT.Player("yt-player", {
-    height: "180",
-    width:  "100%",
-    playerVars: {
-      autoplay:       0,  // don't auto-play on page load
-      controls:       1,  // show YouTube's native controls (play, volume, etc.)
-      modestbranding: 1,  // hide the large YouTube wordmark logo
-      rel:            0,  // don't recommend unrelated videos when paused
-      iv_load_policy: 3,  // hide annotation cards overlaid on the video
-    },
-    events: {
-      onReady: () => {
-        /*
-          onReady fires when the iframe has fully initialised.
-          If the user clicked a sound button while the player was still
-          loading (ytReady was still false), we load the video now.
-        */
-        ytReady = true;
-        if (ambientType !== "off") loadYouTubeVideo(ambientType);
-      },
-    },
-  });
+  const pct = (audioEl.currentTime / audioEl.duration) * 100;
+  document.getElementById("audioProgressBar").style.width = pct + "%";
+  document.getElementById("audioCurrentTime").textContent =
+    formatAudioTime(audioEl.currentTime);
 };
 
-// ─── Load + auto-play a video inside the existing iframe ──────
-function loadYouTubeVideo(type) {
+// ─── Show the total track length once the browser has read the file ──
+audioEl.onloadedmetadata = function () {
+  document.getElementById("audioTotalTime").textContent =
+    formatAudioTime(audioEl.duration);
+};
+
+// ─── Convert raw seconds into "m:ss" string (e.g. 90 → "1:30") ──
+function formatAudioTime(secs) {
   /*
-    loadVideoById() fetches the video and starts playing immediately.
-    We guard on ytReady so we never call methods before the player
-    has finished initialising (which would throw an error).
+    Math.floor(secs / 60)  → whole minutes
+    Math.floor(secs % 60)  → remaining seconds
+    padStart(2, "0")       → ensures "1:05" not "1:5"
   */
-  const videoId = YOUTUBE_VIDEOS[type];
-  if (!videoId || !ytPlayer || !ytReady) return;
-  ytPlayer.loadVideoById(videoId);
+  const m = Math.floor(secs / 60);
+  const s = Math.floor(secs % 60);
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
+// ─── Toggle play / pause for the current track ───────────────────
+function toggleAudioPlayback() {
+  if (audioEl.paused) {
+    audioEl.play().catch(() => {});
+  } else {
+    audioEl.pause();
+  }
+}
+
+// Keep the button icon in sync with the actual audio state
+audioEl.onplay = function () {
+  const btn = document.getElementById("audioPauseBtn");
+  if (btn) btn.textContent = "⏸";
+};
+audioEl.onpause = function () {
+  const btn = document.getElementById("audioPauseBtn");
+  if (btn) btn.textContent = "▶";
+};
+
+// ─── Seek when user clicks anywhere on the progress track ────────
+function seekAudio(event) {
+  /*
+    getBoundingClientRect() returns the pixel position of the bar on screen.
+    (event.clientX - rect.left) = how many pixels from the left edge the user clicked.
+    Dividing by the bar's total width gives a 0–1 fraction.
+    Multiplying by duration converts that fraction to a time in seconds.
+  */
+  if (!audioEl.duration) return;
+  const bar  = event.currentTarget;
+  const rect = bar.getBoundingClientRect();
+  const pct  = (event.clientX - rect.left) / rect.width;
+  audioEl.currentTime = Math.max(0, Math.min(1, pct)) * audioEl.duration;
 }
 
 // ─── Master switch — called by all 7 sound buttons ────────────
 function setAmbient(type) {
   /*
-    Steps every time a sound button is clicked:
-      1. Update state + UI + localStorage
-      2a. If "off" → stop the player, hide the panel
-      2b. Otherwise → show the panel, load the video
+    Every time the user clicks a sound button:
+      1. Save state, update button highlights, persist to localStorage.
+      2a. "off" → pause and clear the audio, hide the player panel.
+      2b. Any track → reveal the panel, update the track label,
+          load the MP3 if it's different from what's currently loaded,
+          then play.
   */
   ambientType = type;
   updateAmbientButtons();
   localStorage.setItem("ambientPreference", type);
 
-  const container = document.getElementById("ytContainer");
+  const player = document.getElementById("audioPlayer");
 
   if (type === "off") {
-    if (ytPlayer && ytReady) ytPlayer.stopVideo();
-    container.classList.remove("active");
+    audioEl.pause();
+    audioEl.src = "";
+    // Reset the progress bar and time labels back to zero
+    document.getElementById("audioProgressBar").style.width = "0%";
+    document.getElementById("audioCurrentTime").textContent = "0:00";
+    document.getElementById("audioTotalTime").textContent   = "0:00";
+    player.classList.remove("active");
     return;
   }
 
-  // Show the YouTube player panel, then start the video
-  container.classList.add("active");
-  loadYouTubeVideo(type);
+  const track = AUDIO_TRACKS[type];
+  player.classList.add("active");
+
+  // Update the emoji and track name shown in the player header
+  document.getElementById("audioEmoji").textContent = track.emoji;
+  document.getElementById("audioName").textContent  = track.name;
+
+  // Only change the src if we're switching to a DIFFERENT track.
+  // If the user clicks the same button twice, we keep playback position.
+  const fullSrc = new URL(track.src, location.href).href;
+  if (audioEl.src !== fullSrc) {
+    audioEl.src = track.src;
+  }
+
+  // .play() returns a Promise — .catch() silently handles the case where
+  // the browser blocks autoplay (requires a prior user gesture).
+  audioEl.play().catch(() => {});
 }
 
 function updateAmbientButtons() {
@@ -1970,22 +2022,20 @@ function updateAmbientButtons() {
 
 function loadAmbientPreference() {
   /*
-    Restore the user's last-used sound type from localStorage.
-    We do NOT auto-play on page load because:
-      1. Browsers block autoplay before any user interaction.
-      2. The YouTube player may not be ready yet (ytReady = false).
-    We just restore the button highlight so the user sees their previous choice.
-    Clicking the button again will start playback.
+    Restore the user's last-used sound choice from localStorage.
+    We only restore the button highlight — we do NOT auto-play,
+    because browsers require a user gesture before playing audio.
+    The user just clicks the same button again to resume.
 
-    Migration map: old type names from the previous Web Audio API version
-    → new names used by the YouTube version.
+    Migration map: old type names → current names, so returning users
+    don't get broken state from a previous version of the app.
   */
   const saved = localStorage.getItem("ambientPreference") || "off";
   const migrate = {
-    white: "off", cafe: "off",        // removed sounds → silence
-    jazz: "jazz1", classical: "jazz2", // remapped
-    ocean: "ocean", rain: "rain", forest: "forest", lofi: "lofi",
-    jazz1: "jazz1", jazz2: "jazz2", off: "off",
+    white: "off", cafe: "off",
+    jazz: "jazz1", classical: "jazz2",
+    ocean: "ocean", rain: "rain", forest: "forest",
+    lofi: "lofi", jazz1: "jazz1", jazz2: "jazz2", off: "off",
   };
   ambientType = migrate[saved] ?? "off";
   updateAmbientButtons();

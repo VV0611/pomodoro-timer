@@ -20,7 +20,7 @@
                If not cached, try the real network.
 */
 
-const CACHE_NAME = "pomodoro-v2";
+const CACHE_NAME = "pomodoro-v3";
 /*
   Cache name = a key for a "storage bucket" in the browser.
   The "v1" suffix is important: when we update the app, we change
@@ -33,7 +33,13 @@ const ASSETS_TO_CACHE = [
   "./timer.css",
   "./timer.js",
   "./manifest.json",
-  "./icon.svg"
+  "./icon.svg",
+  "./sounds/ocean.mp3",
+  "./sounds/rain.mp3",
+  "./sounds/forest.mp3",
+  "./sounds/lofi.mp3",
+  "./sounds/jazz1.mp3",
+  "./sounds/jazz2.mp3",
 ];
 /*
   These are the files we pre-cache when the SW installs.
@@ -57,14 +63,18 @@ self.addEventListener("install", event => {
         It's all-or-nothing: if one file fails, nothing is cached.
       */
       return cache.addAll(ASSETS_TO_CACHE);
-    })
+    }).then(() => self.skipWaiting())
+    /*
+      skipWaiting() is chained AFTER caching completes.
+      Calling it outside waitUntil() (the old placement) could let the SW
+      activate before all assets were cached — a subtle race condition.
+      Chaining here ensures caching always finishes first.
+
+      By default, a new SW waits until the old one is gone before activating.
+      skipWaiting() says: "activate immediately, don't wait."
+      Combined with clients.claim() below, updates take effect right away.
+    */
   );
-  self.skipWaiting();
-  /*
-    By default, a new SW waits until the old one is gone before activating.
-    skipWaiting() says: "activate immediately, don't wait."
-    Combined with clients.claim() below, updates take effect right away.
-  */
 });
 
 

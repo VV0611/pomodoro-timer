@@ -74,8 +74,6 @@
     The status bar becomes translucent so our dark background shows through.
   -->
 
-  <!-- YouTube IFrame Player API — loads async, then calls onYouTubeIframeAPIReady() -->
-  <script src="https://www.youtube.com/iframe_api"></script>
 
 </head>
 
@@ -334,12 +332,23 @@
         <button class="btn-ambient"        id="ambientJazz2"  onclick="setAmbient('jazz2')"  title="Jazz mix 2">🎸</button>
       </div>
       <!--
-        YouTube player container — hidden (display:none) until user picks a sound.
-        class "active" is added by setAmbient() to reveal it.
-        The YouTube IFrame API injects an <iframe> inside #yt-player on page load.
+        Mini audio player — hidden until user picks a sound.
+        setAmbient() adds class "active" to reveal it.
+        Shows track name, a clickable progress bar, and current / total time.
       -->
-      <div class="yt-container" id="ytContainer">
-        <div id="yt-player"></div>
+      <div class="audio-player" id="audioPlayer">
+        <div class="audio-header">
+          <span class="audio-emoji" id="audioEmoji"></span>
+          <span class="audio-name"  id="audioName"></span>
+          <button class="audio-playpause-btn" id="audioPauseBtn" onclick="toggleAudioPlayback()" title="播放 / 暂停">⏸</button>
+        </div>
+        <div class="audio-progress-track" id="audioProgressTrack" onclick="seekAudio(event)" title="点击跳转">
+          <div class="audio-progress-fill" id="audioProgressBar"></div>
+        </div>
+        <div class="audio-time-row">
+          <span id="audioCurrentTime">0:00</span>
+          <span id="audioTotalTime">0:00</span>
+        </div>
       </div>
     </div>
 
