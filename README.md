@@ -154,6 +154,17 @@ pomodoro-timer/
 - ⚙️ **Service worker** — fixed a race condition where `skipWaiting()` could activate before caching finished
 - ⚙️ **Service Worker** —— 修复了缓存完成前提前激活的竞争条件
 
+### v3.0 — 2026-06-13
+
+**Sound files compressed / 音频文件压缩**
+- Re-encoded all 6 ambient MP3s to 64 kbps mono — file sizes reduced from 58–162 MB down to ~1.4 MB each
+- Long ambient tracks (ocean, rain, forest) trimmed to 3-minute loops
+- Sound files are now included in the repo and served directly via GitHub Pages
+- 将 6 个环境音 MP3 重新编码为 64 kbps 单声道，文件大小从 58–162 MB 压缩至约 1.4 MB
+- 长时环境音（海浪、雨声、森林）裁剪为 3 分钟循环片段
+- 音频文件现已纳入仓库，通过 GitHub Pages 直接提供服务
+
+
 ---
 
 ### v1.0 — 2026-06-12
