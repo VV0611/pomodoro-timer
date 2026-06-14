@@ -587,6 +587,18 @@ body {
   color: #f5a623; /* Orange like a flame */
 }
 
+.goal-count {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+  letter-spacing: 1px;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.goal-count.goal-done {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(224, 160, 168, 0.5);
+}
+
 
 /* ============================================================
    14b. ACTIVE TASK DISPLAY (📌 pin bar above timer)
@@ -1029,8 +1041,8 @@ body {
 
 /* When JavaScript adds class "settings-open", the panel slides open */
 .settings-panel.settings-open {
-  max-height: 260px;
-  /* Increased from 200px to 260px to fit the new Long Break row */
+  max-height: 320px;
+  /* Increased to 320px to fit all four settings rows (Focus, Break, Long, Goal) */
   /* 200px is enough space to show all the inputs.
      The actual content might only be ~140px tall,
      but we set a bigger value to give the transition room to work. */

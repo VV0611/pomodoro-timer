@@ -20,7 +20,7 @@
                If not cached, try the real network.
 */
 
-const CACHE_NAME = "pomodoro-v4";
+const CACHE_NAME = "pomodoro-v5";
 /*
   Cache name = a key for a "storage bucket" in the browser.
   The "v1" suffix is important: when we update the app, we change

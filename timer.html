@@ -191,6 +191,18 @@
         min="5" so it's always longer than a regular short break.
       -->
 
+      <div class="settings-row">
+        <label for="inputGoal">Goal</label>
+        <input
+          type="number"
+          id="inputGoal"
+          value="8"
+          min="1"
+          max="20"
+        />
+        <span>🍅</span>
+      </div>
+
       <!-- Error message area (empty until validation fails) -->
       <div class="settings-error" id="settingsError"></div>
       <!--
@@ -273,10 +285,11 @@
     <!-- ---- ROUND COUNTER (e.g. "Round 1 / 4") ---- -->
     <div class="round-info" id="roundInfo">Round 1 / 4</div>
 
-    <!-- ---- SESSION STATS ROW: today's count + day streak ---- -->
+    <!-- ---- SESSION STATS ROW: today's count + day streak + daily goal ---- -->
     <div class="session-stats-row">
       <div class="pomodoro-count" id="pomodoroCount">🍅 × 0</div>
       <div class="streak-count"   id="streakCount">🔥 × 0</div>
+      <div class="goal-count"     id="goalCount">🎯 0 / 8</div>
     </div>
     <!--
       🍅 × N = how many focus sessions completed TODAY (resets at midnight)

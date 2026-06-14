@@ -60,6 +60,10 @@ const btnFullscreen = document.getElementById("btnFullscreen");
 const weeklyChart = document.getElementById("weeklyChart");
 const weekTotal   = document.getElementById("weekTotal");
 
+// Daily goal
+const goalCountEl = document.getElementById("goalCount");
+const inputGoal   = document.getElementById("inputGoal");
+
 
 /* =============================================================
    SECTION 3: STATE VARIABLES
@@ -78,6 +82,9 @@ let isFocusMode  = true;    // true = Focus, false = Break (short or long)
 let isLongBreak  = false;   // true only during the long break after round 4
 let currentRound = 1;       // Which round we're on (1 to 4)
 let sessionSeconds;         // Total seconds in the FULL session (for progress bar)
+
+// Daily goal
+let dailyGoal = 8;          // How many pomodoros the user wants to complete today
 
 // Active task (Feature H)
 let activeTaskId = null;    // id of the task the user pinned for this session
@@ -716,6 +723,13 @@ function applySettings() {
     */
   }
 
+  const newGoal = parseInt(inputGoal.value);
+  if (!isNaN(newGoal) && newGoal >= 1 && newGoal <= 20) {
+    dailyGoal = newGoal;
+    localStorage.setItem("dailyGoal", dailyGoal);
+    updateGoalDisplay();
+  }
+
   statusMessage.textContent = `Settings saved! Focus: ${focusMinutes}min, Break: ${breakMinutes}min, Long: ${longBreakMinutes}min ✓`;
 }
 
@@ -924,6 +938,7 @@ function incrementStats() {
   updateStatsDisplay();
   checkStreak();        // Update consecutive-day streak (Feature E)
   updateWeeklyStats();  // Update the 7-day chart data (Feature F)
+  updateGoalDisplay();  // Refresh the 🎯 progress chip
 }
 
 
@@ -2174,12 +2189,28 @@ document.addEventListener("fullscreenchange", () => {
    Putting all init calls here, after every declaration, avoids that.
    ============================================================= */
 
+function loadGoal() {
+  const saved = localStorage.getItem("dailyGoal");
+  if (saved !== null) {
+    dailyGoal = parseInt(saved);
+    inputGoal.value = dailyGoal;
+  }
+  updateGoalDisplay();
+}
+
+function updateGoalDisplay() {
+  const achieved = pomodoroCount >= dailyGoal;
+  goalCountEl.textContent = `🎯 ${pomodoroCount} / ${dailyGoal}`;
+  goalCountEl.classList.toggle("goal-done", achieved);
+}
+
 loadSettings();          // 1. Read saved focus/break/long-break times from localStorage
 initialise();            // 2. Draw the timer display (needs step 1 first)
 initNotifications();     // 3. Re-enable 🔔 bell if browser permission was already granted
 showNotifPrompt();       // 4. Show in-app permission banner if user hasn't decided yet
 loadStats();             // 5. Draw today's 🍅 × N count
-loadStreak();            // 6. Draw 🔥 streak counter
-loadWeeklyStats();       // 7. Draw the 7-day bar chart
-loadAmbientPreference(); // 7. Resume ambient sound if user had one selected
-loadTasks();             // 8. Draw saved task list (must be last — renderTasks calls updateActiveTaskDisplay)
+loadGoal();              // 6. Draw 🎯 daily goal chip (needs pomodoroCount from step 5)
+loadStreak();            // 7. Draw 🔥 streak counter
+loadWeeklyStats();       // 8. Draw the 7-day bar chart
+loadAmbientPreference(); // 9. Resume ambient sound if user had one selected
+loadTasks();             // 10. Draw saved task list (must be last — renderTasks calls updateActiveTaskDisplay)

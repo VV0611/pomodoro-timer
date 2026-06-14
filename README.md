@@ -161,6 +161,18 @@ pomodoro-timer/
 - ⚙️ **Service worker** — fixed a race condition where `skipWaiting()` could activate before caching finished
 - ⚙️ **Service Worker** —— 修复了缓存完成前提前激活的竞争条件
 
+### v4.2 — 2026-06-15
+
+**Daily pomodoro goal / 每日番茄钟目标**
+- New `🎯 N / G` chip in the stats row shows today's progress toward a daily session goal
+- Goal is configurable (1–20) via the ⚙ settings panel and persists in `localStorage`
+- Chip turns pink and glows when the goal is reached
+- 新增 `🎯 N / G` 进度标记，显示今日已完成番茄钟数 / 目标数
+- 可在 ⚙ 设置面板中设置目标（1–20），通过 `localStorage` 持久保存
+- 达成目标后标记变为粉色并发光
+
+---
+
 ### v4.1 — 2026-06-15
 
 **Notification prompt & chime / 通知权限提示 & 琶音音效**
