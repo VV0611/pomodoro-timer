@@ -1810,7 +1810,7 @@ function renderWeeklyChart() {
 
     // Draw the bar
     ctx.fillStyle = isToday
-      ? "rgba(233, 69, 96, 0.85)"   // Today: pink/red (matches the app's accent)
+      ? "rgba(224, 160, 168, 0.85)"  // Today: rose-pink (matches the app's accent)
       : "rgba(255, 255, 255, 0.18)"; // Past days: subtle white
 
     if (day.count > 0) {
@@ -1841,8 +1841,8 @@ function renderWeeklyChart() {
 
     // Count label above each bar
     if (day.count > 0) {
-      ctx.fillStyle  = isToday ? "rgba(233, 69, 96, 1)" : "rgba(255,255,255,0.45)";
-      ctx.font       = "bold 9px Segoe UI, Arial, sans-serif";
+      ctx.fillStyle  = isToday ? "rgba(224, 160, 168, 1)" : "rgba(255,255,255,0.45)";
+      ctx.font       = "bold 9px Quicksand, sans-serif";
       ctx.textAlign  = "center";
       ctx.fillText(day.count, barX + barW / 2, barY - 3);
     }
@@ -1850,8 +1850,8 @@ function renderWeeklyChart() {
     // Day label at the bottom
     ctx.fillStyle = isToday ? "rgba(255,255,255,0.9)" : "rgba(255,255,255,0.3)";
     ctx.font      = isToday
-      ? "bold 10px Segoe UI, Arial, sans-serif"
-      : "10px Segoe UI, Arial, sans-serif";
+      ? "bold 10px Quicksand, sans-serif"
+      : "10px Quicksand, sans-serif";
     ctx.textAlign = "center";
     ctx.fillText(day.label, barX + barW / 2, H - 2);
   });

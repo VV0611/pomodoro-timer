@@ -4,8 +4,8 @@
   "description": "Study timer with tasks, streaks, ambient sounds, and weekly stats",
   "start_url": "./timer.html",
   "display": "standalone",
-  "background_color": "#1a1a2e",
-  "theme_color": "#e94560",
+  "background_color": "#000000",
+  "theme_color": "#e0a0a8",
   "orientation": "portrait-primary",
   "icons": [
     {
