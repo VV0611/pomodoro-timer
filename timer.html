@@ -62,7 +62,7 @@
     the status bar pink — a small but polished detail.
   -->
 
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="apple-touch-icon" href="icon.png">
   <!--
     apple-touch-icon: the icon shown on iOS home screens when the user
     clicks "Add to Home Screen" in Safari.
@@ -93,7 +93,7 @@
     <button class="btn-bell" id="btnNotification" onclick="requestNotificationPermission()">🔕</button>
 
     <!-- ---- FULLSCREEN BUTTON (top-right, left of ⚙) ---- -->
-    <button class="btn-fullscreen" id="btnFullscreen" onclick="toggleFullscreen()" title="全屏专注">
+    <button class="btn-fullscreen" id="btnFullscreen" onclick="toggleFullscreen()" title="Fullscreen focus">
       <!--
         SVG icon: four corner arrows pointing OUTWARD = "expand / go fullscreen"
         The icon path swaps in JS when fullscreen state changes.
@@ -358,10 +358,10 @@
           Each plays a real YouTube video as background music.
           The embedded player appears below when a sound is active.
         -->
-        <button class="btn-ambient active" id="ambientOff"    onclick="setAmbient('off')"    title="静音">🔇</button>
-        <button class="btn-ambient"        id="ambientOcean"  onclick="setAmbient('ocean')"  title="海浪声">🌊</button>
-        <button class="btn-ambient"        id="ambientRain"   onclick="setAmbient('rain')"   title="钢琴+雨水声">🌧</button>
-        <button class="btn-ambient"        id="ambientForest" onclick="setAmbient('forest')" title="钢琴+森林">🌲</button>
+        <button class="btn-ambient active" id="ambientOff"    onclick="setAmbient('off')"    title="Mute">🔇</button>
+        <button class="btn-ambient"        id="ambientOcean"  onclick="setAmbient('ocean')"  title="Ocean waves">🌊</button>
+        <button class="btn-ambient"        id="ambientRain"   onclick="setAmbient('rain')"   title="Piano + rain">🌧</button>
+        <button class="btn-ambient"        id="ambientForest" onclick="setAmbient('forest')" title="Piano + forest">🌲</button>
         <button class="btn-ambient"        id="ambientLofi"   onclick="setAmbient('lofi')"   title="Lo-fi music">🎵</button>
         <button class="btn-ambient"        id="ambientJazz1"  onclick="setAmbient('jazz1')"  title="Jazz mix 1">🎷</button>
         <button class="btn-ambient"        id="ambientJazz2"  onclick="setAmbient('jazz2')"  title="Jazz mix 2">🎸</button>
@@ -375,9 +375,9 @@
         <div class="audio-header">
           <span class="audio-emoji" id="audioEmoji"></span>
           <span class="audio-name"  id="audioName"></span>
-          <button class="audio-playpause-btn" id="audioPauseBtn" onclick="toggleAudioPlayback()" title="播放 / 暂停">⏸</button>
+          <button class="audio-playpause-btn" id="audioPauseBtn" onclick="toggleAudioPlayback()" title="Play / Pause">⏸</button>
         </div>
-        <div class="audio-progress-track" id="audioProgressTrack" onclick="seekAudio(event)" title="点击跳转">
+        <div class="audio-progress-track" id="audioProgressTrack" onclick="seekAudio(event)" title="Click to seek">
           <div class="audio-progress-fill" id="audioProgressBar"></div>
         </div>
         <div class="audio-time-row">

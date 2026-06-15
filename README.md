@@ -133,7 +133,7 @@ pomodoro-timer/
 ├── timer.js        # All the timer logic      ·  全部计时逻辑
 ├── sw.js           # Service worker (offline) ·  Service Worker(离线缓存)
 ├── manifest.json   # PWA manifest             ·  PWA 配置清单
-├── icon.svg        # App icon                 ·  应用图标
+├── icon.png        # App icon (512×512 PNG)   ·  应用图标
 └── cats/           # State-driven cat images (PNG, transparent bg)  ·  状态驱动猫咪图片（透明背景 PNG）
     ├── idle-cat.png
     ├── focus-cat.png
@@ -144,6 +144,18 @@ pomodoro-timer/
 ```
 
 ## 🔄 Changelog / 更新记录
+
+### v4.3 — 2026-06-15
+
+**Notification UX & English UI / 通知体验改善 & 界面英文化**
+- iOS-specific error message: tapping the bell now says "Add to Home Screen to enable notifications" instead of a generic unsupported error
+- All remaining Chinese text in the UI converted to English — ambient sound names (`Ocean waves`, `Piano + rain`, `Piano + forest`), button tooltips, fullscreen titles, and error messages
+- App icon switched from SVG to 512×512 PNG for better PWA install compatibility across iOS and Android
+- iOS Safari 上点击铃铛现在显示"添加到主屏幕"引导，而非笼统的"不支持"提示
+- UI 中所有残留中文已转为英文（环境音名称、按钮提示、全屏标题、错误提示）
+- 应用图标从 SVG 改为 512×512 PNG，提升 iOS 和 Android 的 PWA 安装兼容性
+
+---
 
 ### v2.0 — 2026-06-13
 

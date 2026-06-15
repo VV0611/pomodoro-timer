@@ -1004,13 +1004,12 @@ async function requestNotificationPermission() {
 
   // ── Check 1: Does this browser support notifications at all? ──────────
   if (!("Notification" in window)) {
-    /*
-      "Notification" in window  checks if the Notification API exists
-      in the global window object.
-      Old browsers (e.g. IE11) don't have it.
-      ! reverses the check: "if Notification does NOT exist..."
-    */
-    statusMessage.textContent = "This browser doesn't support notifications 😕";
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    if (isIOS) {
+      statusMessage.textContent = "iOS Safari requires 'Add to Home Screen' to enable notifications 🏠";
+    } else {
+      statusMessage.textContent = "This browser doesn't support notifications. Try Chrome or Firefox 😕";
+    }
     return;
   }
 
@@ -1910,9 +1909,9 @@ function renderWeeklyChart() {
 
 // ─── Track metadata: file path + display info ────────────────
 const AUDIO_TRACKS = {
-  ocean:  { src: "sounds/ocean.mp3",  emoji: "🌊", name: "海浪声"      },
-  rain:   { src: "sounds/rain.mp3",   emoji: "🌧", name: "钢琴 + 雨水" },
-  forest: { src: "sounds/forest.mp3", emoji: "🌲", name: "钢琴 + 森林" },
+  ocean:  { src: "sounds/ocean.mp3",  emoji: "🌊", name: "Ocean waves"   },
+  rain:   { src: "sounds/rain.mp3",   emoji: "🌧", name: "Piano + rain"  },
+  forest: { src: "sounds/forest.mp3", emoji: "🌲", name: "Piano + forest"},
   lofi:   { src: "sounds/lofi.mp3",   emoji: "🎵", name: "Lo-fi music" },
   jazz1:  { src: "sounds/jazz1.mp3",  emoji: "🎷", name: "Jazz mix 1"  },
   jazz2:  { src: "sounds/jazz2.mp3",  emoji: "🎸", name: "Jazz mix 2"  },
@@ -2158,11 +2157,11 @@ document.addEventListener("fullscreenchange", () => {
   if (isFS) {
     // Compress icon: four inward-pointing corners → "click to EXIT fullscreen"
     path.setAttribute("d", "M4 1V4H1M13 4H10V1M10 13V10H13M1 10H4V13");
-    btnFullscreen.title = "退出全屏";
+    btnFullscreen.title = "Exit fullscreen";
   } else {
     // Expand icon: four outward-pointing corners → "click to GO fullscreen"
     path.setAttribute("d", "M1 5V1H5M9 1H13V5M13 9V13H9M5 13H1V9");
-    btnFullscreen.title = "全屏专注";
+    btnFullscreen.title = "Fullscreen focus";
   }
   /*
     How the SVG path commands work (a crash course):
