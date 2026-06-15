@@ -518,8 +518,8 @@ function sessionComplete() {
         that if we're here, currentRound was < MAX_ROUNDS, so incrementing
         is safe and won't go past MAX_ROUNDS.
       */
-      statusMessage.textContent = `Round ${currentRound - 1} done! Ready for round ${currentRound}? 🍅`;
-      showNotification("Break's over! 💪", "Ready for the next focus session? You've got this!");
+      statusMessage.textContent = `Round ${currentRound - 1} done! Starting round ${currentRound}... 🍅`;
+      showNotification("Break's over! 💪", "Starting next focus session — you've got this!");
     }
 
     isLongBreak   = false;
@@ -529,10 +529,8 @@ function sessionComplete() {
     sessionSeconds = totalSeconds;
     updateRoundInfo();
 
-    // After any break, DON'T auto-start — let the user decide when to begin
-    updateDisplay();
-    btnStart.disabled = false;
-    btnPause.disabled = true;
+    // Auto-start the next focus session after any break
+    startTimer(true);
   }
 }
 
