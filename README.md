@@ -145,6 +145,38 @@ pomodoro-timer/
 
 ## 🔄 Changelog / 更新记录
 
+### v5.0 — 2026-06-22
+
+**Cat Companion mini-game / 猫咪伴侣小游戏**
+- New standalone page (`pet.html`) — navigate to it via the 🐱 button on the timer, return via ⏱
+- Pages share state only through `localStorage` (`coins`, `petState`) — no coupling between `timer.*` and `pet.*` files
+- 新增独立页面（`pet.html`） —— 点击计时器上的 🐱 按钮进入，点击 ⏱ 返回
+- 两页面仅通过 `localStorage`（`coins`、`petState`）共享状态，`timer.*` 与 `pet.*` 文件之间无直接耦合
+
+**Cat stats & levelling / 猫咪属性与升级**
+- Three stats — Fullness / Mood / Energy — decay in real time using drift-proof `Date.now()` anchoring (same technique as the main timer); capped at 8 h offline
+- Mood drains 2× when hungry (<25) or tired (<20); sleep auto-ends at full energy
+- EXP earned from feeding and playing; level formula: `50 + (level−1)×40`
+- 三项属性（饱食 / 心情 / 精力）使用与主计时器相同的 `Date.now()` 防漂移锚点实时衰减，离线最多计算 8 小时
+- 饥饿（<25）或疲惫（<20）时心情衰减加倍；精力满自动醒来
+- 喂食和玩耍获得经验；升级公式：`50 + (等级−1)×40`
+
+**Shop & Closet tabs / 商店 & 衣柜标签页**
+- Shop sections: Head (7 items) · Eyes (3) · Neck (4) · Held (4) · Backgrounds (8 CSS gradients) · Beds (3, shown only when sleeping) · Skins (5) · Bundles (3 sets at 20% off, charges only unowned items)
+- Closet groups owned items by slot; four slots can be equipped simultaneously; toggling the same item unequips it
+- Milestone gifts: Crown 👑 auto-granted at Lv.6, Halo 😇 at Lv.8
+- 商店分区：头部（7 件）· 眼部（3）· 颈部（4）· 手持（4）· 背景（8 种 CSS 渐变）· 猫窝（3，仅睡眠时显示）· 皮肤（5）· 套装（3 套，打八折，仅对未拥有道具收费）
+- 衣柜按槽位分组，四个槽位可同时穿戴，再次点击同一件取下
+- 里程碑礼物：Lv.6 自动获得皇冠 👑，Lv.8 自动获得光环 😇
+
+**PWA update / PWA 更新**
+- `pet.html`, `pet.css`, `pet.js` added to the service worker precache; cache bumped to `pomodoro-v7`
+- `manifest.json` gains a shortcut entry for Cat Companion (long-press the home screen icon on Android / jump list on Windows)
+- `pet.html`、`pet.css`、`pet.js` 加入 Service Worker 预缓存；缓存版本升至 `pomodoro-v7`
+- `manifest.json` 新增猫咪伴侣快捷方式（Android 长按图标 / Windows 任务栏跳转列表可见）
+
+---
+
 ### v4.4 — 2026-06-15
 
 **Auto-start next session / 自动开始下一轮**

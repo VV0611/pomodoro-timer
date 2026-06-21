@@ -20,7 +20,7 @@
                If not cached, try the real network.
 */
 
-const CACHE_NAME = "pomodoro-v6";
+const CACHE_NAME = "pomodoro-v7";
 /*
   Cache name = a key for a "storage bucket" in the browser.
   The "v1" suffix is important: when we update the app, we change
@@ -32,6 +32,9 @@ const ASSETS_TO_CACHE = [
   "./timer.html",
   "./timer.css",
   "./timer.js",
+  "./pet.html",
+  "./pet.css",
+  "./pet.js",
   "./manifest.json",
   "./icon.png",
   "./sounds/ocean.mp3",

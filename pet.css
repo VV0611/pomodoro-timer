@@ -1,0 +1,1044 @@
+/* =============================================================
+   pet.css — Cat Companion page styles
+   Design tokens are identical to timer.css — both pages share
+   the same visual language: black background, dark cards,
+   rose-pink accent (#e0a0a8), Quicksand font.
+   设计令牌与 timer.css 完全一致，两页面共享相同的视觉语言。
+   ============================================================= */
+
+
+/* ============================================================
+   0. DESIGN TOKENS — identical to timer.css
+   Copy-pasted so pet.css works standalone (no @import needed).
+   独立复制，pet.css 不依赖 timer.css 即可正常工作。
+   ============================================================ */
+
+:root {
+  --bg:        #000000;   /* Page background — pure black              */
+  --card-bg:   #141414;   /* Card background — very dark grey          */
+  --divider:   #262626;   /* Subtle separator lines                    */
+  --text:      #f2ece0;   /* Primary text — warm off-white             */
+  --text-sec:  #8a8a8a;   /* Secondary text — muted grey               */
+  --accent:    #e0a0a8;   /* Brand colour — rose pink                  */
+  --accent-dk: #c88490;   /* Darker rose pink for gradients            */
+}
+
+
+/* ============================================================
+   1. GLOBAL RESET — identical to timer.css
+   Remove browser default margins, padding, and set border-box.
+   清除浏览器默认样式，统一使用 border-box 盒模型。
+   ============================================================ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /*
+    box-sizing: border-box means padding is INCLUDED in the element's
+    declared width — layout math stays predictable.
+    width 包含 padding，使布局计算更可预测。
+  */
+}
+
+
+/* ============================================================
+   2. BODY — same flex-column layout as timer.css
+   Centers all cards vertically and horizontally on the page.
+   与 timer.css 相同的 flex 纵向布局，居中显示所有卡片。
+   ============================================================ */
+
+body {
+  font-family: 'Quicksand', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  /* min-height: 100vh = at least as tall as the browser window */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  /* flex-direction: column stacks cards vertically (top to bottom) */
+
+  gap: 20px;
+  /* 20px space between the pet card and the tab card */
+
+  padding: 40px 20px;
+  /* Breathing room so cards don't touch the screen edges */
+}
+
+
+/* ============================================================
+   3. MAIN PET CARD — mirrors .card in timer.css exactly
+   Same border-radius, shadow, backdrop-filter, and dark glass look.
+   与 timer.css 的 .card 完全一致的卡片样式。
+   ============================================================ */
+
+.card {
+  position: relative;
+  /*
+    position: relative makes this card the reference point for any
+    child elements that use position: absolute (the ⏱ Focus button).
+    为卡片内绝对定位的子元素（⏱ 按钮）提供参考坐标系。
+  */
+
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  /* Frosted-glass effect — blurs whatever is behind the card */
+
+  border: 1px solid var(--divider);
+  border-radius: 24px;
+
+  padding: 48px 36px 36px;
+  /*
+    Top: 48px — generous breathing room above the cat image.
+    Sides: 36px — slightly tighter than timer.css (40px) because
+    this card has more content items (stats + buttons).
+    Bottom: 36px.
+    上方 48px，两侧 36px，下方 36px。
+  */
+
+  width: min(400px, 94vw);
+  /* Same responsive width as the timer card */
+
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+}
+
+
+/* ============================================================
+   4. FOCUS LINK BUTTON (top-left corner)
+   Mirrors .btn-bell in timer.css: same size, position, and style.
+   Returns the user to timer.html.
+   与 timer.css 的 .btn-bell 完全相同的样式，用于返回计时器页面。
+   ============================================================ */
+
+.btn-focus {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  /* Exact same coordinates as .btn-bell in timer.css */
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  /* text-decoration: none removes the default link underline */
+  transition: all 0.2s ease;
+}
+
+.btn-focus:hover {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--accent);
+  /* On hover: brightens slightly and turns rose-pink */
+  transform: scale(1.1);
+}
+
+
+/* ============================================================
+   5. COIN DISPLAY (centered pill near top of card)
+   Gold-tinted pill badge showing the user's current coin balance.
+   金色胶囊形徽章，展示当前金币余额。
+   ============================================================ */
+
+.coin-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 215, 0, 0.1);
+  /* 255, 215, 0 = CSS gold colour, at 10% opacity */
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 999px;
+  /* 999px = fully pill-shaped, regardless of content width */
+  padding: 5px 16px;
+  margin-bottom: 20px;
+}
+
+.coin-icon {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.coin-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #ffe066;
+  /* Bright gold — makes the number pop against the dark card */
+  font-variant-numeric: tabular-nums;
+  /*
+    tabular-nums: all digits take the same horizontal width.
+    Prevents the layout from shifting when the number changes (e.g. 9→10).
+    等宽数字，防止数字变化时布局抖动。
+  */
+}
+
+.coin-label {
+  font-size: 11px;
+  color: rgba(255, 215, 0, 0.5);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+   6. CAT IMAGE AREA
+   Large, centred cat image with a soft pink glow underneath.
+   大号猫咪图片，居中显示，带粉色光晕。
+   ============================================================ */
+
+.cat-area {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.pet-cat-img {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  /* object-fit: contain scales the image to fit without cropping */
+  background: transparent;
+  filter: drop-shadow(0 0 48px rgba(224, 160, 168, 0.22));
+  /*
+    drop-shadow applies a glow that follows the image's actual shape
+    (unlike box-shadow which follows the rectangular bounding box).
+    drop-shadow 跟随图片实际轮廓发光，不像 box-shadow 那样框住矩形区域。
+  */
+  transition: transform 0.3s ease;
+}
+
+.pet-cat-img:hover {
+  transform: scale(1.05);
+  /* Gentle grow on hover — gives the cat a living feel */
+}
+
+
+/* ============================================================
+   7. CAT NAME + LEVEL
+   Name on the left, small level badge pill on the right.
+   猫咪名字居左，等级徽章居右。
+   ============================================================ */
+
+.cat-identity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.cat-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 0.5px;
+}
+
+.cat-lv {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  background: rgba(224, 160, 168, 0.12);
+  border: 1px solid rgba(224, 160, 168, 0.28);
+  border-radius: 999px;
+  padding: 3px 10px;
+}
+
+
+/* ============================================================
+   8. EXP BAR
+   Thin progress bar showing experience toward the next level.
+   经验条：细长渐变条，显示升级进度。
+   ============================================================ */
+
+.exp-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.exp-track {
+  flex: 1;
+  /* flex: 1 = takes all space left after the label */
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.exp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #f5c8d0);
+  /* Pink gradient — matches the accent theme */
+  border-radius: 999px;
+  transition: width 0.6s ease;
+  /*
+    Smooth animation when the EXP value updates in Phase 3.
+    第三阶段更新经验值时，宽度平滑过渡。
+  */
+}
+
+.exp-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  white-space: nowrap;
+  /* nowrap prevents "0 / 100 EXP" from wrapping to a second line */
+  letter-spacing: 0.3px;
+  flex-shrink: 0;
+}
+
+
+/* ============================================================
+   9. SECTION DIVIDER
+   A 1px horizontal rule separating cat area from stat bars.
+   1px 横线，分隔猫咪展示区与状态条区域。
+   ============================================================ */
+
+.section-divider {
+  height: 1px;
+  background: var(--divider);
+  margin-bottom: 20px;
+}
+
+
+/* ============================================================
+   10. STAT BARS SECTION (Fullness / Mood / Energy)
+   Each row: icon | label | coloured track | numeric value
+   每行：图标 | 名称 | 彩色进度条 | 数值
+   ============================================================ */
+
+.stats-section {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+/* Individual stat row — horizontal flex container */
+.stat-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.stat-icon {
+  font-size: 14px;
+  line-height: 1;
+  width: 18px;
+  flex-shrink: 0;
+  /* Fixed width so all track bars start at the same x position */
+}
+
+.stat-name {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  width: 62px;
+  /* Fixed width so all tracks are left-aligned regardless of label length */
+  flex-shrink: 0;
+  letter-spacing: 0.3px;
+}
+
+.stat-track {
+  flex: 1;
+  /* Takes all remaining horizontal space between label and value */
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.stat-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.5s ease;
+  /* Smooth bar update when Phase 3 changes stat values */
+}
+
+/* ── Stat fill colours — each stat has its own distinct gradient ── */
+
+.stat-fullness {
+  background: linear-gradient(90deg, #f5a623, #e8811c);
+  /* Warm orange — food / hunger feel */
+}
+
+.stat-mood {
+  background: linear-gradient(90deg, var(--accent), var(--accent-dk));
+  /* Rose pink — matches the app's main accent colour */
+}
+
+.stat-energy {
+  background: linear-gradient(90deg, #ffe066, #ffcc00);
+  /* Yellow-gold — bright and electric */
+}
+
+.stat-val {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.45);
+  width: 26px;
+  text-align: right;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+  /* Equal-width digits: "100" and "8" take the same space */
+}
+
+
+/* ============================================================
+   11. ACTION BUTTONS (Feed / Play / Sleep)
+   Three equal-width buttons. Each gets a subtle colour on hover
+   that matches its action type (food, play, rest).
+   三个等宽按钮，悬停时显示对应操作的特征颜色。
+   ============================================================ */
+
+.action-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-action {
+  flex: 1;
+  max-width: 110px;
+  padding: 11px 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-action:active {
+  transform: translateY(0);
+  /* Press effect — button snaps back to original position */
+}
+
+/* Feed button — orange accent on hover (matches stat-fullness colour) */
+.btn-feed:hover {
+  background: rgba(245, 166, 35, 0.18);
+  border-color: rgba(245, 166, 35, 0.3);
+  box-shadow: 0 6px 20px rgba(245, 166, 35, 0.18);
+}
+
+/* Play button — pink accent on hover (matches stat-mood / --accent colour) */
+.btn-play:hover {
+  background: rgba(224, 160, 168, 0.18);
+  border-color: rgba(224, 160, 168, 0.3);
+  box-shadow: 0 6px 20px rgba(224, 160, 168, 0.18);
+}
+
+/* Sleep button — soft purple accent on hover (calm / rest feel) */
+.btn-sleep:hover {
+  background: rgba(179, 136, 255, 0.18);
+  border-color: rgba(179, 136, 255, 0.3);
+  box-shadow: 0 6px 20px rgba(179, 136, 255, 0.18);
+}
+
+/* Disabled state — Feed and Play are dimmed while the cat sleeps */
+/* 睡眠中禁用喂食和玩耍按钮 */
+.btn-action:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Coin display shake — fires when the user can't afford an action */
+/* 金币不足时抖动反馈 */
+@keyframes shake {
+  0%, 100% { transform: translateX(0);    }
+  20%       { transform: translateX(-7px); }
+  40%       { transform: translateX(7px);  }
+  60%       { transform: translateX(-4px); }
+  80%       { transform: translateX(4px);  }
+}
+
+.coin-display.shake {
+  animation: shake 0.45s ease;
+}
+
+
+/* ============================================================
+   12. TAB CARD (second card below the main pet card)
+   Same glass style as .task-card and .stats-card in timer.css.
+   与 timer.css 的任务卡片 / 统计卡片相同的玻璃质感样式。
+   ============================================================ */
+
+.tab-card {
+  width: min(400px, 94vw);
+  /* Same width as the main card — they visually align */
+
+  background: var(--card-bg);
+  border: 1px solid var(--divider);
+  border-radius: 24px;
+  padding: 0;
+  /* No inner padding — the tab bar lives flush against the top edge */
+
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.4),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+
+  overflow: hidden;
+  /*
+    overflow: hidden clips child elements to the card's rounded corners.
+    This ensures the tab bar's background doesn't escape the border-radius.
+    隐藏溢出内容，确保标签栏背景被圆角正确裁剪。
+  */
+}
+
+
+/* ============================================================
+   13. TAB BAR
+   Three equally-spaced tab buttons with an animated underline.
+   三个等宽标签按钮，激活时显示粉色下划线动画。
+   ============================================================ */
+
+.tab-bar {
+  display: flex;
+  border-bottom: 1px solid var(--divider);
+  /* Horizontal rule visually separates tabs from content area below */
+}
+
+.tab-btn {
+  flex: 1;
+  /* Each button takes an equal one-third of the tab bar */
+
+  padding: 14px 8px;
+  background: none;
+  border: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+  transition: color 0.2s ease;
+  position: relative;
+  /* position: relative needed for the ::after pseudo-element underline */
+}
+
+.tab-btn::after {
+  /*
+    Animated underline indicator for the active tab.
+    Starts at width: 0, grows to 60% when the tab becomes active.
+    激活标签下方的粉色指示线，宽度从 0 平滑增长到 60%。
+  */
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  /* Centers the underline under the button */
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.25s ease;
+}
+
+.tab-btn.active {
+  color: var(--accent);
+  /* Active tab text turns rose-pink */
+}
+
+.tab-btn.active::after {
+  width: 55%;
+  /* Active underline spans 55% of the button width */
+}
+
+.tab-btn:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.6);
+  /* Non-active tabs brighten slightly on hover */
+}
+
+
+/* ============================================================
+   14. TAB CONTENT + PANES
+   Each .tab-pane is hidden; JS adds "active" to reveal one.
+   每个 .tab-pane 默认隐藏，JS 通过添加 "active" 类显示对应面板。
+   ============================================================ */
+
+.tab-content {
+  padding: 20px 24px;
+  min-height: 96px;
+  /*
+    min-height prevents the tab card from collapsing to nothing
+    when panes contain only the empty-state placeholder text.
+    最小高度防止只有占位文字时卡片塌陷。
+  */
+}
+
+.tab-pane {
+  display: none;
+  /* All panes hidden by default */
+}
+
+.tab-pane.active {
+  display: block;
+  animation: paneSlideIn 0.2s ease;
+  /* Gentle upward slide-in when switching tabs */
+}
+
+@keyframes paneSlideIn {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* Empty-state message inside each pane (Phase 2 placeholder) */
+.pane-empty {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.28);
+  text-align: center;
+  padding: 14px 0 4px;
+  line-height: 1.5;
+}
+
+
+/* ============================================================
+   15. FEED TAB — food item cards
+   2-column grid; each card shows emoji, name, cost, stat deltas, and a Feed button.
+   2 列网格；每张卡片展示图标、名称、费用、属性增量和喂食按钮。
+   ============================================================ */
+
+.feed-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.food-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 10px 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s ease;
+}
+
+.food-card:not(.food-card-dim):hover {
+  border-color: rgba(245, 166, 35, 0.3);
+  /* Warm orange glow on hoverable cards / 可用卡片悬停时橙色边框 */
+}
+
+.food-card-dim {
+  opacity: 0.4;
+  /* Dimmed when asleep or can't afford / 睡眠中或金币不足时半透明 */
+}
+
+.food-emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.food-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.food-cost {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffe066;
+}
+
+.food-stats {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.food-stats span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 2px 5px;
+  white-space: nowrap;
+}
+
+.btn-food-use {
+  margin-top: 4px;
+  width: 100%;
+  padding: 7px 0;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.btn-food-use:hover:not(:disabled) {
+  background: rgba(245, 166, 35, 0.2);
+  border-color: rgba(245, 166, 35, 0.35);
+  color: white;
+}
+
+.btn-food-use:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Special badge row (favorite / catnip) — above the emoji */
+/* 特殊标记行（最爱食物 / 猫薄荷），位于 emoji 上方 */
+.food-badges {
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 2px;
+}
+
+.food-badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+  border-radius: 999px;
+  padding: 2px 6px;
+  white-space: nowrap;
+}
+
+.food-fav {
+  background: rgba(224, 160, 168, 0.18);
+  color: var(--accent);
+  border: 1px solid rgba(224, 160, 168, 0.3);
+}
+
+.food-catnip {
+  background: rgba(100, 200, 100, 0.12);
+  color: #88cc88;
+  border: 1px solid rgba(100, 200, 100, 0.25);
+}
+
+/* Negative stat badge — red tint for Bargain Bits mood penalty */
+/* 负数属性标记 — 临期特价粮的心情惩罚 */
+.food-stats .stat-neg {
+  color: rgba(255, 110, 100, 0.8) !important;
+  background: rgba(255, 80, 80, 0.08) !important;
+}
+
+
+/* ============================================================
+   16. CAT INTERACTION & SLEEP CUES (Phase 4)
+   Petting bounce, Zzz bubble, sleepy status line.
+   Phase 4：抚摸弹跳、Zzz 气泡、低精力状态提示。
+   ============================================================ */
+
+/* Wrapper anchors the Zzz bubble relative to the cat image */
+/* 为 Zzz 气泡提供相对定位参考 */
+.cat-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0; /* removes gap below inline-block img / 消除图片下方间隙 */
+}
+
+/* Pointer cursor + stacking above cat-bg / 手形光标，层叠在背景之上 */
+.pet-cat-img {
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
+}
+
+/* Zzz bubble — top-right of cat image */
+/* Zzz 气泡定位于猫咪图片右上角 */
+.zzz-cue {
+  position: absolute;
+  top: 0;
+  right: -18px;
+  font-size: 20px;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
+  display: none;
+}
+
+@keyframes zzzFloat {
+  0%   { opacity: 0;   transform: translate(0,   0px)  scale(0.8); }
+  30%  { opacity: 1;   transform: translate(4px, -7px)  scale(1);   }
+  70%  { opacity: 0.8; transform: translate(7px, -14px) scale(1.1); }
+  100% { opacity: 0;   transform: translate(10px,-22px) scale(1.2); }
+}
+
+.zzz-cue.active {
+  display: block;
+  animation: zzzFloat 2.4s ease-in-out infinite;
+}
+
+/* Bounce triggered on each pet click / 每次点击猫咪时触发弹跳 */
+@keyframes catBounce {
+  0%, 100% { transform: scale(1); }
+  40%       { transform: scale(1.1) translateY(-8px); }
+  70%       { transform: scale(0.97) translateY(2px); }
+}
+
+.cat-bounce {
+  animation: catBounce 0.38s ease !important;
+  transition: none !important; /* prevent existing transition from fighting the animation */
+  /* 弹跳期间关闭过渡，避免与动画冲突 */
+}
+
+/* Sleepy status line — amber text, shown when energy < 20 and awake */
+/* 金黄色状态提示，精力低于 20 且清醒时显示 */
+.status-line {
+  font-size: 12px;
+  color: rgba(255, 215, 0, 0.8);
+  text-align: center;
+  margin-bottom: 10px;
+  min-height: 20px;
+  letter-spacing: 0.3px;
+}
+
+
+/* ============================================================
+   17. SHOP + CLOSET TABS — accessory cards, overlays, backgrounds
+   4-slot overlay system (head / eyes / neck / held) + bed + background.
+   4 槽位叠加层（头 / 眼 / 颈 / 手持）+ 猫窝 + 背景。
+   ============================================================ */
+
+/* Background fill — sits behind the cat image / 背景填充，在猫咪图片之后渲染 */
+.cat-bg {
+  position: absolute;
+  inset: 0;
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 0;
+  transition: background 0.5s ease;
+}
+
+/* Base overlay — shared by all 5 slot divs / 所有槽位共用的基础叠加样式 */
+.acc-overlay {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  line-height: 1;
+  z-index: 2;
+}
+
+/* Slot-specific positions on 160 × 160 cat image / 各槽位在 160 × 160 图片上的定位 */
+.acc-head { top: -14px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; }
+.acc-eyes { top: 36px;  right: 4px;                             font-size: 1.2rem; }
+.acc-neck { bottom: 54px; left: 50%; transform: translateX(-50%); font-size: 1.3rem; }
+.acc-held { bottom: 6px; right: -10px;                          font-size: 1.5rem; }
+.acc-bed  { bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 1.8rem; }
+
+/* ── Card grid ──────────────────────────────────────────────── */
+
+.acc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.acc-card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 12px 8px 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: border-color 0.2s ease;
+}
+
+.acc-card:not(.acc-card-dim):hover {
+  border-color: rgba(224, 160, 168, 0.3);
+}
+
+.acc-card-dim {
+  opacity: 0.4;
+}
+
+.acc-card-equipped {
+  border-color: rgba(224, 160, 168, 0.45);
+  background: rgba(224, 160, 168, 0.08);
+}
+
+.acc-emoji {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.acc-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: 0.3px;
+}
+
+.acc-cost {
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffe066;
+}
+
+.acc-cost s {
+  color: rgba(255, 255, 255, 0.25);
+  font-size: 9px;
+  text-decoration: line-through;
+  margin-right: 2px;
+}
+
+.acc-equipped-label {
+  font-size: 10px;
+  color: var(--accent);
+  letter-spacing: 0.3px;
+}
+
+.btn-acc-buy,
+.btn-acc-equip {
+  margin-top: 4px;
+  width: 100%;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+}
+
+.btn-acc-buy:hover:not(:disabled),
+.btn-acc-equip:hover {
+  background: rgba(224, 160, 168, 0.2);
+  border-color: rgba(224, 160, 168, 0.35);
+  color: white;
+}
+
+.btn-acc-buy:disabled,
+.btn-bundle-buy:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-bundle-buy {
+  margin-top: 4px;
+  width: 100%;
+  padding: 6px 0;
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 10px;
+  background: rgba(255, 215, 0, 0.07);
+  color: rgba(255, 215, 0, 0.8);
+  transition: all 0.2s ease;
+}
+
+.btn-bundle-buy:hover:not(:disabled) {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.35);
+  color: #ffe066;
+}
+
+/* ── Shop sections (label + grid per category) / 商店分区 ──── */
+
+.shop-section {
+  margin-bottom: 18px;
+}
+
+.shop-section:last-child {
+  margin-bottom: 0;
+}
+
+.shop-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--divider);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.bundle-note {
+  font-size: 9px;
+  font-weight: 700;
+  color: #ffe066;
+  background: rgba(255, 215, 0, 0.12);
+  border: 1px solid rgba(255, 215, 0, 0.2);
+  border-radius: 999px;
+  padding: 1px 6px;
+  letter-spacing: 0.3px;
+  text-transform: none;
+}
+
+/* Bundle card extras / 套装卡片附加样式 */
+.bundle-items {
+  font-size: 14px;
+  letter-spacing: 3px;
+  line-height: 1;
+  margin: 2px 0;
+}
+
+
+/* ============================================================
+   18. NARROW PHONE ADJUSTMENTS
+   Tighten spacing so everything fits on 375px-wide screens.
+   适配 375px 宽度小屏手机，适当收紧间距。
+   ============================================================ */
+
+@media (max-width: 440px) {
+  .card {
+    padding: 44px 24px 28px;
+  }
+
+  .pet-cat-img {
+    width: 130px;
+    height: 130px;
+  }
+
+  .cat-name {
+    font-size: 17px;
+  }
+
+  .btn-action {
+    font-size: 12px;
+    padding: 10px 6px;
+  }
+
+  .stat-name {
+    width: 52px;
+  }
+}

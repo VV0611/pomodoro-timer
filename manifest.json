@@ -14,5 +14,13 @@
       "type": "image/png",
       "purpose": "any maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Cat Companion",
+      "short_name": "Cat",
+      "description": "Check on your cat and spend coins",
+      "url": "./pet.html"
+    }
   ]
 }

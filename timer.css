@@ -541,6 +541,40 @@ body {
 
 
 /* ============================================================
+   BTN-CAT — shortcut link to Cat Companion page (pet.html)
+   猫咪伴侣快捷按钮 — 点击跳转宠物游戏页面
+   Position: right of the 🔕 bell, mirrors .btn-fullscreen on the right:
+     right: 54px = 16px gap + 32px ⚙ button + 6px gap
+     left:  54px = 16px gap + 32px 🔕 bell   + 6px gap
+   ============================================================ */
+
+.btn-cat {
+  position: absolute;
+  top: 16px;
+  left: 54px;
+  /* 紧贴 🔕 铃铛右侧，与右侧 .btn-fullscreen 形成对称布局 */
+
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 15px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;   /* 去除链接默认下划线 / remove default link underline */
+  transition: all 0.2s ease;
+}
+
+.btn-cat:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.1);   /* 同 .btn-bell:hover 的缩放效果 / same scale as bell hover */
+}
+
+
+/* ============================================================
    14. SESSION STATS ROW (🍅 count + 🔥 streak, side by side)
    ============================================================ */
 

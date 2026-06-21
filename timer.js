@@ -932,6 +932,12 @@ function incrementStats() {
   pomodoroCount++;
   // ++ is the INCREMENT operator: adds 1.
 
+  // ── 猫咪金币：完成专注后赚取金币，存入 localStorage["coins"] ──────────────
+  // Each completed focus session earns 3 coins per minute of focus time.
+  // 每完成一段专注，每分钟赚取 3 枚金币。
+  const prevCoins = parseInt(localStorage.getItem("coins") || "0", 10);
+  localStorage.setItem("coins", String(prevCoins + focusMinutes * 3));
+
   saveStats();
   updateStatsDisplay();
   checkStreak();        // Update consecutive-day streak (Feature E)

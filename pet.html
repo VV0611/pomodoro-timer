@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!--
+  pet.html — Cat Companion mini-game page
+  Communicates with timer.html only through localStorage:
+    coins    — earned on timer side, spent here
+    petState — cat's stats (fullness, mood, energy, level, exp)
+
+  猫咪伴侣游戏页面，与计时器页仅通过 localStorage 通信：
+    coins    = 金币（计时器赚取，这里消费）
+    petState = 猫咪状态（饱食/心情/精力/等级/经验值）
+-->
+
+<html lang="en">
+
+<head>
+  <!--
+    <head> — invisible settings section
+    Holds page metadata, font links, and the CSS stylesheet.
+    不可见的页面设置区：存放元数据、字体链接和 CSS 样式表。
+  -->
+
+  <meta charset="UTF-8">
+  <!--
+    UTF-8 supports every character — English, Chinese, emoji, etc.
+    支持所有字符，包括中英文和 emoji。
+  -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!--
+    Makes the page display correctly on mobile phones.
+    确保手机屏幕上页面不会意外缩放。
+  -->
+
+  <title>Cat Companion 🐱</title>
+
+  <!-- Google Fonts — Quicksand (exact match with timer.html) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Pet page styles -->
+  <link rel="stylesheet" href="pet.css">
+
+</head>
+
+<body>
+  <!--
+    <body> — the visible section
+    Everything the user sees and clicks lives here.
+    用户可见、可交互的所有内容都放在这里。
+  -->
+
+  <!-- ===================== MAIN PET CARD ===================== -->
+  <div class="card">
+    <!--
+      .card mirrors the timer page's main card exactly:
+      same dark background, border-radius 24px, drop-shadow, and Quicksand font.
+      样式与计时器主卡片完全一致，保持两页面视觉统一。
+    -->
+
+    <!-- ---- FOCUS LINK (top-left corner — mirrors 🔕 bell position) ---- -->
+    <a class="btn-focus" href="timer.html" title="Back to Focus Timer">⏱</a>
+    <!--
+      <a> is an anchor element — it navigates to another page when clicked.
+      href="timer.html" = destination is the timer page in the same folder.
+      Styled identically to .btn-bell in timer.css (32×32px, absolute top-left).
+      返回计时器的链接按钮，样式与计时器的铃铛按钮完全一致，位于左上角。
+    -->
+
+    <!-- ---- COIN DISPLAY (centered pill, top of card content) ---- -->
+    <div class="coin-display" id="coinDisplay">
+      <!--
+        Read-only display of the coin balance from localStorage["coins"].
+        Coins are earned in timer.js — this page only shows and spends them.
+        只读展示金币数量，来自 localStorage["coins"]，消费逻辑在第三阶段实现。
+      -->
+      <span class="coin-icon">🪙</span>
+      <span class="coin-amount" id="coinAmount">0</span>
+      <span class="coin-label">coins</span>
+    </div>
+
+    <!-- ---- CAT IMAGE AREA ---- -->
+    <div class="cat-area">
+      <!-- .cat-wrapper anchors the Zzz bubble relative to the cat image -->
+      <!-- .cat-wrapper 为 Zzz 气泡提供相对定位参考 -->
+      <div class="cat-wrapper">
+        <!-- Background fill — JS applies gradient when a background is equipped / 穿戴背景时 JS 设置渐变 -->
+        <div class="cat-bg" id="catBg"></div>
+        <img
+          class="pet-cat-img"
+          id="petCatImg"
+          src="cats/idle-cat.png"
+          alt=""
+          aria-hidden="true"
+        >
+        <!-- Zzz bubble — JS adds "active" when asleep / 睡眠时由 JS 添加 "active" 类 -->
+        <div class="zzz-cue" id="zzzCue">💤</div>
+        <!-- Slot overlays — JS writes emoji per slot / JS 按槽位分别写入 emoji -->
+        <div class="acc-overlay acc-head" id="accHead"></div>
+        <div class="acc-overlay acc-eyes" id="accEyes"></div>
+        <div class="acc-overlay acc-neck" id="accNeck"></div>
+        <div class="acc-overlay acc-held" id="accHeld"></div>
+        <!-- Bed overlay — only visible when sleeping / 仅睡眠时显示猫窝 -->
+        <div class="acc-overlay acc-bed" id="accBed"></div>
+      </div>
+    </div>
+
+    <!-- ---- CAT NAME + LEVEL ---- -->
+    <div class="cat-identity">
+      <!--
+        cat-name — the cat's display name (will be editable in a later phase)
+        cat-lv   — level badge, driven by EXP accumulated in Phase 3+
+        猫咪名字和等级标签，之后从 petState 读取并动态更新。
+      -->
+      <span class="cat-name" id="catName">Luna</span>
+      <span class="cat-lv"   id="catLv">Lv. 1</span>
+    </div>
+
+    <!-- ---- SLEEPY STATUS LINE ---- -->
+    <!-- JS fills this when energy < 20 and awake / 精力低于 20 且清醒时由 JS 填充 -->
+    <div class="status-line" id="statusLine"></div>
+
+    <!-- ---- EXP BAR ---- -->
+    <div class="exp-section">
+      <!--
+        EXP bar shows progress toward the next level.
+        Outer div = grey track; inner div = coloured fill (width = EXP %).
+        经验条：外层是灰色轨道，内层宽度等于当前经验百分比。
+      -->
+      <div class="exp-track">
+        <div class="exp-fill" id="expFill" style="width: 0%"></div>
+        <!--
+          style="width: 0%" is a Phase 2 placeholder (no EXP earned yet).
+          Phase 3 will compute: (currentExp / expNeeded) * 100 + "%"
+          第二阶段占位符，第三阶段由实际经验值计算填充宽度。
+        -->
+      </div>
+      <span class="exp-label" id="expLabel">0 / 100 EXP</span>
+    </div>
+
+    <!-- ---- SECTION DIVIDER ---- -->
+    <div class="section-divider"></div>
+    <!--
+      A thin 1px horizontal rule that visually separates
+      the cat / identity section from the stat bars below.
+      细横线，分隔猫咪展示区与下方的状态条区域。
+    -->
+
+    <!-- ---- STAT BARS (Fullness / Mood / Energy) ---- -->
+    <div class="stats-section">
+      <!--
+        Three bars each tracking a 0–100 value.
+        Phase 2: inline style widths are static placeholders.
+        Phase 3: will read real values from localStorage["petState"].
+        三条状态条，范围 0–100。第二阶段为占位固定值，
+        第三阶段从 localStorage["petState"] 读取真实数据。
+      -->
+
+      <!-- Fullness — orange bar (🍖 food colour) -->
+      <div class="stat-row">
+        <span class="stat-icon">🍖</span>
+        <span class="stat-name">Fullness</span>
+        <div class="stat-track">
+          <div class="stat-fill stat-fullness" id="fillFullness" style="width: 80%"></div>
+          <!--
+            width: 80% represents 80 / 100 fullness (placeholder).
+            stat-fullness → warm orange gradient (see pet.css).
+            橙色渐变，代表饱食度 80/100（占位值）。
+          -->
+        </div>
+        <span class="stat-val" id="valFullness">80</span>
+      </div>
+
+      <!-- Mood — rose-pink bar (💗 accent colour) -->
+      <div class="stat-row">
+        <span class="stat-icon">💗</span>
+        <span class="stat-name">Mood</span>
+        <div class="stat-track">
+          <div class="stat-fill stat-mood" id="fillMood" style="width: 70%"></div>
+          <!--
+            stat-mood → pink gradient (matches --accent: #e0a0a8).
+            粉色渐变，与整体主题色一致，心情 70/100（占位值）。
+          -->
+        </div>
+        <span class="stat-val" id="valMood">70</span>
+      </div>
+
+      <!-- Energy — yellow-gold bar (⚡ electric colour) -->
+      <div class="stat-row">
+        <span class="stat-icon">⚡</span>
+        <span class="stat-name">Energy</span>
+        <div class="stat-track">
+          <div class="stat-fill stat-energy" id="fillEnergy" style="width: 90%"></div>
+          <!--
+            stat-energy → yellow-gold gradient (bright and energetic).
+            金黄色渐变，精力 90/100（占位值）。
+          -->
+        </div>
+        <span class="stat-val" id="valEnergy">90</span>
+      </div>
+
+    </div><!-- end .stats-section -->
+
+    <!-- ---- ACTION BUTTONS (Feed / Play / Sleep) ---- -->
+    <div class="action-row">
+      <!--
+        Phase 2: buttons are present for layout but have no click handlers yet.
+        Phase 3 will add: deduct coin cost, update petState, animate the cat image.
+        第二阶段：按钮仅作视觉展示，无点击逻辑。
+        第三阶段：添加扣除金币 / 更新状态 / 触发猫咪动画的完整逻辑。
+      -->
+      <button class="btn-action btn-feed"  id="btnFeed">🍖 Feed</button>
+      <button class="btn-action btn-play"  id="btnPlay">🎾 Play</button>
+      <button class="btn-action btn-sleep" id="btnSleep">😴 Sleep</button>
+    </div>
+
+  </div><!-- end .card -->
+
+
+  <!-- ===================== TAB CARD ===================== -->
+  <div class="tab-card">
+    <!--
+      A second card below the main pet card for browsing items.
+      Contains three tabs: Feed / Shop / Closet.
+      第二张卡片，用于浏览物品。三个标签页：食物 / 商店 / 衣柜。
+    -->
+
+    <!-- ---- TAB BAR ---- -->
+    <div class="tab-bar" id="tabBar">
+      <!--
+        Three tab buttons. JavaScript toggles class "active" to show
+        which tab is selected; the active tab gets an accent underline.
+        三个标签按钮，JS 切换 "active" 类高亮当前选中的标签。
+      -->
+      <button class="tab-btn active" data-tab="feed">🍖 Feed</button>
+      <button class="tab-btn"        data-tab="shop">🛒 Shop</button>
+      <button class="tab-btn"        data-tab="closet">👗 Closet</button>
+      <!--
+        data-tab="feed" is a custom HTML attribute.
+        JavaScript reads it via btn.dataset.tab to know which pane to show.
+        自定义属性 data-tab，JS 通过 dataset.tab 读取以确定显示哪个面板。
+      -->
+    </div>
+
+    <!-- ---- TAB CONTENT ---- -->
+    <div class="tab-content">
+      <!--
+        Each .tab-pane is hidden (display: none) by default.
+        Only the pane whose id matches the active tab is shown (display: block).
+        每个 .tab-pane 默认隐藏，JS 通过添加 "active" 类显示对应面板。
+      -->
+
+      <!-- Feed pane -->
+      <div class="tab-pane active" id="paneFeed">
+        <!--
+          Phase 2 placeholder. Phase 3 will render food item cards here.
+          第二阶段占位内容，第三阶段渲染可购买的食物道具卡片。
+        -->
+        <p class="pane-empty">🐟 Food items coming soon — keep earning coins!</p>
+      </div>
+
+      <!-- Shop pane -->
+      <div class="tab-pane" id="paneShop">
+        <p class="pane-empty">🛒 The shop is stocking up — check back soon!</p>
+      </div>
+
+      <!-- Closet pane -->
+      <div class="tab-pane" id="paneCloset">
+        <p class="pane-empty">👗 No outfits yet — your cat is rocking the natural look!</p>
+      </div>
+
+    </div><!-- end .tab-content -->
+
+  </div><!-- end .tab-card -->
+
+
+  <!-- ===================== JAVASCRIPT ===================== -->
+  <script src="pet.js"></script>
+  <!--
+    pet.js is loaded at the BOTTOM of <body> so all HTML elements
+    already exist by the time JavaScript tries to find them.
+    放在 <body> 底部，确保 HTML 元素在 JS 执行前已全部加载完毕。
+  -->
+
+</body>
+</html>
