@@ -1063,3 +1063,43 @@ body {
   0%, 100% { opacity: 1; }
   50%       { opacity: 0.6; }
 }
+
+
+/* ============================================================
+   19. FLOATING STAT POPUP
+   Appears above the cat after feeding or playing, then fades out.
+   喂食或玩耍后，属性增量从猫咪处浮起并淡出。
+   ============================================================ */
+
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateX(-50%) translateY(0);    }
+  75%  { opacity: 1; transform: translateX(-50%) translateY(-38px); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-52px); }
+}
+
+.float-popup {
+  position: absolute;
+  top: 18%;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  white-space: nowrap;
+  animation: floatUp 1.2s ease-out forwards;
+}
+
+.float-popup span {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.9);
+  letter-spacing: 0.2px;
+}
+
+.popup-hunger { color: #f5a623; }
+.popup-mood   { color: #e8b8c4; }
+.popup-energy { color: #ffe066; }
+.popup-exp    { color: rgba(255, 255, 255, 0.5); }
+.popup-neg    { color: #ff8888; }

@@ -396,6 +396,27 @@ function trySpendCoins(amount) {
 
 
 /* =============================================================
+   SECTION 6b: FLOATING STAT POPUP
+   Creates a short-lived div above the cat showing stat gains.
+   items = array of { text, cls } e.g. { text: "+25🍖", cls: "popup-hunger" }
+   ============================================================= */
+
+function showFloatPopup(items) {
+  const wrapper = document.querySelector(".cat-wrapper");
+  const el = document.createElement("div");
+  el.className = "float-popup";
+  items.forEach(({ text, cls }) => {
+    const span = document.createElement("span");
+    span.className = cls;
+    span.textContent = text;
+    el.appendChild(span);
+  });
+  wrapper.appendChild(el);
+  setTimeout(() => el.remove(), 1200);
+}
+
+
+/* =============================================================
    SECTION 7: ACTIONS
    ============================================================= */
 
@@ -422,6 +443,14 @@ function doFeedItem(itemId) {
 
   petState.exp += item.exp;
   checkLevelUp(petState);
+
+  const popups = [];
+  if (item.hunger > 0) popups.push({ text: "+" + item.hunger + "🍖", cls: "popup-hunger" });
+  if (moodGain > 0)    popups.push({ text: "+" + moodGain   + "💗", cls: "popup-mood"   });
+  if (item.energy > 0) popups.push({ text: "+" + item.energy + "⚡", cls: "popup-energy" });
+  popups.push({ text: "+" + item.exp + "✨", cls: "popup-exp" });
+  showFloatPopup(popups);
+
   saveState(petState);
 
   if (item.catnip) {
@@ -473,6 +502,10 @@ function doPlay() {
   petState.energy = Math.max(0,   petState.energy + PLAY_ACTION.energy);
   petState.exp   += PLAY_ACTION.exp;
   checkLevelUp(petState);
+  showFloatPopup([
+    { text: "+" + PLAY_ACTION.mood + "💗",  cls: "popup-mood" },
+    { text: PLAY_ACTION.energy + "⚡",       cls: "popup-neg"  },
+  ]);
   saveState(petState);
 
   flashAction = "played";
