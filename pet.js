@@ -27,7 +27,7 @@
 // Feed 标签页食物目录，按费用排序；特殊字段：favorite / catnip / minLevel。
 const FOOD_ITEMS = [
   // ── Budget ───────────────────────────────────────────────────────────────
-  { id: "bargain",    label: "Bargain Bits", emoji: "🗑️", cost:   5, hunger: 40, mood:-12, exp:  3, energy:  0 },
+  { id: "bargain",    label: "Bargain Bits", emoji: "🗑️", cost:   5, hunger: 40, mood:  0, exp:  3, energy:  0 },
   { id: "tomato",     label: "Tomato",       emoji: "🍅", cost:   8, hunger:  8, mood: 15, exp:  5, energy:  0, favorite: true },
   { id: "fish",       label: "Dried Fish",   emoji: "🐟", cost:  10, hunger: 15, mood:  5, exp:  8, energy:  0 },
   { id: "milk",       label: "Milk",         emoji: "🥛", cost:  15, hunger: 10, mood:  5, exp:  5, energy: 15 },
@@ -301,9 +301,20 @@ function render() {
   if (s.asleep) zzzEl.classList.add("active");
   else          zzzEl.classList.remove("active");
 
-  // ── Sleepy status line ───────────────────────────────────────
-  document.getElementById("statusLine").textContent =
-    (!s.asleep && s.energy < 20) ? "😴 Sleepy... put me to bed!" : "";
+  // ── Sleepy status line / level-up celebration ────────────────
+  if (levelUpPending !== null) {
+    // Show level-up message briefly, then clear so it doesn't linger
+    document.getElementById("statusLine").textContent = `🎉 Level up! Now Lv.${levelUpPending}!`;
+    const img = document.getElementById("petCatImg");
+    img.classList.remove("cat-bounce");
+    void img.offsetWidth; // force reflow so animation re-fires
+    img.classList.add("cat-bounce");
+    setTimeout(() => img.classList.remove("cat-bounce"), 400);
+    levelUpPending = null;
+  } else {
+    document.getElementById("statusLine").textContent =
+      (!s.asleep && s.energy < 20) ? "😴 Sleepy... put me to bed!" : "";
+  }
 
   // ── Accessory overlays (head / eyes / neck / held) ──────────
   const eq    = s.equipped;
@@ -339,13 +350,16 @@ function setStat(name, rawValue) {
    扣除经验阈值并递增等级，直到经验低于下一级所需。
    ============================================================= */
 
+let levelUpPending = null; // Set when cat levels up; read by render() to show celebration
+
 function checkLevelUp(state) {
   let needed = expForLevel(state.level);
   while (state.exp >= needed) {
     state.exp   -= needed;
     state.level += 1;
     needed       = expForLevel(state.level);
-    checkMilestones(state); // grant gifts at milestone levels / 达到里程碑时自动发放礼物
+    checkMilestones(state);
+    levelUpPending = state.level; // remember the new level so render() can celebrate
   }
 }
 
@@ -675,7 +689,7 @@ function renderShopTab() {
     section("🐟 Held",       heldItems, makeShopCard) +
     section("🌄 Backgrounds",BACKGROUNDS, makeShopCard) +
     section("🛌 Beds",       BEDS,      makeShopCard) +
-    section("🐱 Skins",      SKINS,     makeShopCard) +
+    section("🐱 Skins (coming soon)",      SKINS.filter(s => s.id === "default"), makeShopCard) +
     section("🎁 Bundles",    BUNDLES,   makeBundleCard);
 
   pane.querySelectorAll('.btn-acc-buy').forEach(btn => {

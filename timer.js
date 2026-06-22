@@ -484,16 +484,19 @@ function sessionComplete() {
       totalSeconds   = longBreakMinutes * 60; // e.g. 15 * 60 = 900 seconds
       sessionSeconds = totalSeconds;
       // Pick a status message — goal/streak milestones take priority over the default
-      const goalHit = pomodoroCount === dailyGoal;
+      const goalHit     = pomodoroCount === dailyGoal;
+      const coinsEarned = focusMinutes * 3;
+      let msg;
       if (goalHit && streakMilestone) {
-        statusMessage.textContent = `Goal reached + ${streakMilestone} 🎉 Long break earned!`;
+        msg = `Goal reached + ${streakMilestone} 🎉 Long break earned!`;
       } else if (goalHit) {
-        statusMessage.textContent = `Daily goal reached! 🎯 Long break — you earned it!`;
+        msg = `Daily goal reached! 🎯 Long break — you earned it!`;
       } else if (streakMilestone) {
-        statusMessage.textContent = `${streakMilestone} — long break starting! 🏆`;
+        msg = `${streakMilestone} — long break starting! 🏆`;
       } else {
-        statusMessage.textContent = `Cycle complete! 🏆 Enjoy your ${longBreakMinutes}-min long break!`;
+        msg = `Cycle complete! 🏆 Enjoy your ${longBreakMinutes}-min long break!`;
       }
+      statusMessage.textContent = msg + ` +${coinsEarned}🪙`;
       streakMilestone = null; // Clear after use so it doesn't bleed into the next session
       showNotification("Cycle complete! 🏆", `You earned a ${longBreakMinutes}-min long break — great work!`);
 
@@ -505,16 +508,19 @@ function sessionComplete() {
       totalSeconds   = breakMinutes * 60; // e.g. 5 * 60 = 300 seconds
       sessionSeconds = totalSeconds;
       // Pick a status message — goal/streak milestones take priority over the default
-      const goalHit = pomodoroCount === dailyGoal;
+      const goalHit     = pomodoroCount === dailyGoal;
+      const coinsEarned = focusMinutes * 3;
+      let msg;
       if (goalHit && streakMilestone) {
-        statusMessage.textContent = `Goal reached + ${streakMilestone} — break starting! 🎉`;
+        msg = `Goal reached + ${streakMilestone} — break starting! 🎉`;
       } else if (goalHit) {
-        statusMessage.textContent = `Daily goal reached! 🎯 Break starting — you earned it!`;
+        msg = `Daily goal reached! 🎯 Break starting — you earned it!`;
       } else if (streakMilestone) {
-        statusMessage.textContent = `${streakMilestone} — focus session done! Break starting...`;
+        msg = `${streakMilestone} — focus session done! Break starting...`;
       } else {
-        statusMessage.textContent = "Focus session done! Break starting... 🎉";
+        msg = "Focus session done! Break starting... 🎉";
       }
+      statusMessage.textContent = msg + ` +${coinsEarned}🪙`;
       streakMilestone = null; // Clear after use
       showNotification("Focus session complete! 🎉", "Great work — your break is starting now ☕");
     }
